@@ -33,7 +33,7 @@ std::map<std::string, std::vector<float>> Utility::readMapData(
     const char *fileName)
 {
     map<std::string, std::vector<float>> map;
-    ifstream input(fileName);
+    std::ifstream input(fileName);
 
     std::string delimiter = " ";
 
@@ -132,7 +132,64 @@ json Utility::readInputData(const char *fileName)
     return data;
 }
 
-// write end file
+//read hospital data
+std::map<std::string, std::vector<float>> Utility::readHosData(
+    const char *fileName)
+{
+    std::map<std::string, std::vector<float>> Map;
+    std::ifstream input(fileName);
+
+    std::string delimiter = " ";
+
+    int lineNo = 1;
+    int n;
+    for (std::string line; getline(input, line);)
+    {
+        std::vector<float> v;
+        if (lineNo == 1)
+        {
+            n=stoi(line);
+            v.push_back((float)n);
+            Map["Number"] = v;
+        }
+        else{
+            size_t pos = 0;
+            std::string token;
+            std::string name;
+            while ((pos = line.find(delimiter)) != std::string::npos)
+            {
+                token = line.substr(0, pos);
+                v.push_back(stof(token));
+                line.erase(0, pos + delimiter.length());
+            }
+            if(lineNo>=2 && lineNo<=n+1){
+                name=line;
+            }else if(lineNo==n+2) 
+            {
+                name="A";
+                v.push_back(stof(line));
+            }
+            else if(lineNo==n+5) 
+            {
+                name="Rectangle";
+                v.push_back(stof(line));
+            }
+            else if(lineNo==n+3) {
+                name="AGVstart";
+                v.push_back(stof(line));
+            }else if(lineNo==n+4){
+                name="AGVend";
+                v.push_back(stof(line));
+            }else name=line;
+            
+            Map[name] = v;
+        }
+        lineNo++;
+    }
+
+    return Map;
+}
+// write end file .
 void Utility::writeResult(const char *fileName, string name, int mode,
                           std::vector<AGV *> agvs,
                           std::vector<json> juncDataList,
