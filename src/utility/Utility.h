@@ -4,8 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <array>
-#include <lib/nlohmann/json.hpp>
-#include "lib/vecmath/vecmath.h"
+#include "../../lib/nlohmann/json.hpp"
+#include "../../lib/vecmath/vecmath.h"
 #include <map>
 #include "src/agv/AGV.h"
 
