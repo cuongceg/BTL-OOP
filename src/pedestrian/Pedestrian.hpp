@@ -63,18 +63,16 @@ public:
 
 class Event{
   private:    
-    double time,intensity;
+    double time;
+    vector<double>intensity;
   public:  
-    //contructor
-    Event(double time,double intensity): time(time),intensity(intensity){}
-
     //getter methods
     double getTime(){ return time; }
-    double getIntensity(){ return intensity; }
+    vector<double> getIntensity(){ return intensity; }
 
     //setter methods
     void setTime(double time){this->time=time;}
-    void setIntensity(double intensity){this->intensity=intensity;}
+    void setIntensity(vector<double> intensity){this->intensity=intensity;}
 };
 
 class AGVEvent:Event{};
@@ -86,14 +84,14 @@ private:
     double negativeEmotionThreshold;
 
 public:
-    // Constructors
-    Personality(double l, double p, double n)
-        : lambda(l), positiveEmotionThreshold(p), negativeEmotionThreshold(n) {}
-
+    // Setter methods
+    void setLambda(double lambda){this->lambda=lambda;}
+    void setPositiveEmotionThreshold(double pos){positiveEmotionThreshold=pos;}
+    void setNegativeEmotionThreshold(double neg){negativeEmotionThreshold=neg;}
     // Getter methods
-    double getLambda() const { return lambda; }
-    double getPositiveEmotionThreshold() const { return positiveEmotionThreshold; }
-    double getNegativeEmotionThreshold() const { return negativeEmotionThreshold; } 
+    double getLambda(){ return lambda; }
+    double getPositiveEmotionThreshold(){ return positiveEmotionThreshold; }
+    double getNegativeEmotionThreshold(){ return negativeEmotionThreshold; } 
 };
 
 class Pedestrian{
@@ -103,9 +101,9 @@ protected:
     //Ward end;
     //vector<Ward> journey;
     double velocity;
-    //Personality personality;
+    Personality personality;
     Emotion emotion=Emotion();
-    //vector<Event> events;
+    vector<Event> events;
     //double walkingTime;
     //double distance;
     double age;
@@ -121,16 +119,17 @@ public:
     void setAge(double age){this->age=age;}
     //void setWalkingTime(double time){walkingTime=time;}
     void setVelocity(double velocity){this->velocity=velocity;}
-    //void setPersonality(Personality personality){this->personality=personality;}
+    void setPersonality(Personality personality){this->personality=personality;}
+    void setEvents(vector<Event>events){this->events=events;}
     // Getter methods
     int getID() const { return ID; }
     // //Ward getStart() const { return start; }
     // //Ward getEnd() const { return end; }
     // //std::vector<Ward> getJourney() const { return journey; }
     double getVelocity() const { return velocity; }
-    // Personality getPersonality() const { return personality; }
+    Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
-    // std::vector<Event> getEvents() const { return events; }
+    vector<Event> getEvents() const { return events; }
     // double getWalkingTime() const { return walkingTime; }
     // double getDistance() const { return distance; }
     double getAge() const { return age; }
@@ -147,5 +146,6 @@ class Visitor: public Pedestrian{
 };
 
 class Personel: public Pedestrian{};
+vector<Event> generateEvents();
 void generatePedestrian();
 #endif
