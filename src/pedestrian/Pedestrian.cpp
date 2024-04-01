@@ -2,17 +2,59 @@
 #include <iostream>
 #include "../../lib/nlohmann/json.hpp" 
 #include <fstream>
+#include <sstream>
+#include <random>
 #include "../utility/Utility.h"
 
 using namespace std;
 using json = nlohmann::json;
 
+vector<Event> generateEvents(){
+    vector<Event>events;
+    ifstream file("data/event_distrubution.txt");
+    string line;
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            Event event;
+            istringstream iss(line);
+            double value;
+            vector<double> intensity;
+
+            while (iss >> value) {
+                intensity.push_back(value);
+            }
+            for (const auto& value : intensity) {
+                cout << value << " ";
+            }
+            cout << endl;
+            event.setIntensity(intensity);
+            event.setTime(0);
+            events.push_back(event);
+        }
+        file.close();
+    } else {
+        cout << "Cann't open"<< endl;
+    }
+    return events;
+}
+
+int randomNumber(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 42); 
+
+    int random_number = dis(gen);
+    return random_number;
+}
 void generatePedestrian(){
     //47, 37, 37, 27, 25, 27
     json inputData1;
     inputData1 = Utility::readInputData("data/input.json");
     int ID=-1;
+    //Example
     float deviationParam = 5;
+    //age distribution
     double ages[] = {
         40.8, 49.6, 42.8, 46.5, 40.6, 48.7, 48.9, 32.4, 40.1, 35.3, 45.1, 35.8, 42.3, 49.4, 33.6, 44.7,
         38.9, 37.8, 44.1, 44.2, 39.0, 27.9, 38.2, 46.0, 46.3, 54.9, 59.5, 44.7, 45.9, 41.1, 41.0, 32.7,
@@ -30,37 +72,81 @@ void generatePedestrian(){
     };
     int numPedestrians[] = {80,53,67};
     vector<Pedestrian> pedestrians;
-    vector<Event> allEvents;
-    vector<double> allTimeDistances;
-    for(int i=0;i<1;i++){
+    vector<Event> allEvents=generateEvents();
+    // 43 values likes 43 events
+    vector<double> allTimeDistances={2675, 860, 1399, 1909, 810, 2402, 1046, 3036, 1113, 1049, 1550, 1711,
+        1537, 3313, 1397, 1051, 2408, 798, 1210, 1975, 2148, 1220, 1884, 1427,
+        1207, 1604, 902, 1868, 2092, 3312, 814, 2368, 2029, 3028, 1539, 1802,
+        1321, 1530, 2025, 2308, 2808, 2037, 1982};
+    for(int i=0;i<3;i++){
         for(int j=0;j<numPedestrians[i];j++){
+            //unique ID
             ID++;
+            //personality
+            Personality personalityOpen,personalityNeurotic;
+            personalityOpen.setLambda(double(inputData1["personalityDistribution"]["distribution"]["open"]["lambda"]));
+            personalityOpen.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["positiveEmotionThreshold"]));
+            personalityOpen.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["negativeEmotionThreshold"]));
+            personalityNeurotic.setLambda(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["lambda"]));
+            personalityNeurotic.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["positiveEmotionThreshold"]));
+            personalityNeurotic.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["negativeEmotionThreshold"]));
+            //velocity
             double perNoDisabilityWithoutOvertaking =
                 double(inputData1["walkability"]["distribution"]["noDisabilityNoOvertaking"]["velocity"]) * deviationParam;
             double perNoDisabilityWithOvertaking =
                 double(inputData1["walkability"]["distribution"]["noDisabilityOvertaking"]["velocity"]) * deviationParam;
-            // double perWalkingWithCrutches =
-            //     double(inputData1["walkability"]["distribution"]["crutches"]["velocity"]) * deviationParam;
-            // double perWalkingWithSticks = 
-            //     double(inputData1["walkability"]["distribution"]["sticks"]["velocity"]) * deviationParam;
-            // double perWheelchairs = 
-            //     double(inputData1["walkability"]["distribution"]["wheelchairs"]["velocity"]) * deviationParam;
-            // double perTheBlind =
-            //     double(inputData1["walkability"]["distribution"]["blind"]["velocity"]) * deviationParam;
-            switch (i)
-            {
-            case 0 :
+            double perWalkingWithCrutches =
+                double(inputData1["walkability"]["distribution"]["crutches"]["velocity"]) * deviationParam;
+            double perWalkingWithSticks = 
+                double(inputData1["walkability"]["distribution"]["sticks"]["velocity"]) * deviationParam;
+            double perWheelchairs = 
+                double(inputData1["walkability"]["distribution"]["wheelchairs"]["velocity"]) * deviationParam;
+            double perTheBlind =
+                double(inputData1["walkability"]["distribution"]["blind"]["velocity"]) * deviationParam;
+            switch (i) {
+            case 0: {
                 Personel personel;
-                personel.setID(ID+1);
+                vector<Event>events;
+                personel.setID(ID + 1);
                 personel.setAge(ages[ID]);
-                personel.setVelocity(ID<47?perNoDisabilityWithoutOvertaking:perNoDisabilityWithOvertaking);
+                personel.setPersonality(personalityOpen);
+                personel.setVelocity(ID < 47 ? perNoDisabilityWithoutOvertaking : perNoDisabilityWithOvertaking);
+                for(int i=0;i<20;i++){
+                    int x = randomNumber();
+                    Event event=allEvents[x];
+                    event.setTime(allTimeDistances[x]);
+                    events.push_back(event);
+                }
+                personel.setEvents(events);
                 pedestrians.push_back(personel);
                 break;
+            }
+            case 1: {
+                Visitor visitor;
+                visitor.setID(ID + 1);
+                visitor.setAge(ages[ID]);
+                visitor.setPersonality(ID>100?personalityNeurotic:personalityOpen);
+                visitor.setVelocity(ID < 122 ? (ID < 85 ? perNoDisabilityWithOvertaking : perWalkingWithCrutches) : perWalkingWithSticks);
+                pedestrians.push_back(visitor);
+                break;
+            }
+            case 2: {
+                Patient patient;
+                patient.setID(ID + 1);
+                patient.setAge(ages[ID]);
+                patient.setPersonality(personalityNeurotic);
+                patient.setVelocity(ID > 148 ? (ID > 173 ? perTheBlind : perWheelchairs) : perWalkingWithSticks);
+                pedestrians.push_back(patient);
+                break;
+            }
+        }       
         }
     }
+    vector<Event>test=pedestrians[0].getEvents();
+    cout<<test.size();
     ofstream outFile("data/result.txt",ios::app);
     if (!outFile.is_open()) {
-        std::cerr << "Không thể mở file để ghi!" << std::endl;
+        std::cerr << "Cann't open file" << std::endl;
         return ;
     }
     for(auto &pedestrian:pedestrians){
@@ -74,12 +160,16 @@ void generatePedestrian(){
         jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
         jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
         jsonObject["age"] = pedestrian.getAge();
+        jsonObject["personality"]["name"]=pedestrian.getPersonality().getLambda()==1?"Open":"Neurotic";
+        jsonObject["personality"]["lambda"]=pedestrian.getPersonality().getLambda();
+        jsonObject["personality"]["positiveEmotionThreshold"]=pedestrian.getPersonality().getPositiveEmotionThreshold();
+        jsonObject["personality"]["negativeEmotionThreshold"]=pedestrian.getPersonality().getNegativeEmotionThreshold();
+        jsonObject["events"]["pleasure"]=pedestrian.getEvents().at(0).getIntensity();
         outFile << jsonObject << std::endl;
     }
     outFile.close();
 
-    std::cout << "Dữ liệu đã được ghi vào file thành công!" << std::endl;
+    cout << "Write Successfully!" << endl;
     return ;
-}
 }
 
