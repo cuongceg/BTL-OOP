@@ -9,6 +9,48 @@
 using namespace std;
 using json = nlohmann::json;
 
+vector<Ward> generateWard(){
+    vector<Ward> wards;
+    ifstream file("data/hospital.txt");
+    string line;
+    if(file.is_open()){
+        getline(file,line);
+        for(int i=2;i<11;i++){
+            vector<Point>wall;
+            Point midPoint1,midPoint2,point1,point2,point3,point4;
+            double length;
+            string name;
+            if (!getline(file, line)) { 
+                break; 
+            }
+            istringstream iss(line);
+            iss>>midPoint1.x>>midPoint1.y;
+            iss>>midPoint2.x>>midPoint2.y;
+            iss>>length;
+            iss>>name;
+            point1.x=midPoint1.x-length/2;
+            point2.x=midPoint1.x+length/2;
+            point1.y=midPoint1.y;
+            point2.y=midPoint1.y;
+            point3.x=midPoint2.x+length/2;
+            point4.x=midPoint2.x-length/2;
+            point3.y=midPoint2.y;
+            point4.y=midPoint2.y;
+            wall.push_back(point1);
+            wall.push_back(point2);
+            wall.push_back(point3);
+            wall.push_back(point4);
+            Ward ward =Ward(midPoint1,midPoint2,name,wall);
+            wards.push_back(ward);
+            cout<<wards.size()<<endl;
+        }
+        file.close();
+    }else {
+        cout << "Cann't open"<< endl;
+    }
+    return wards;
+}
+
 vector<Event> generateEvents(){
     vector<Event>events;
     ifstream file("data/event_distrubution.txt");
@@ -38,6 +80,13 @@ vector<Event> generateEvents(){
     }
     return events;
 }
+float randomFloat(float lowerBound, float upperBound)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(lowerBound, upperBound);
+    return dis(gen);
+}
 
 int randomNumber(){
     std::random_device rd;
@@ -53,7 +102,7 @@ void generatePedestrian(){
     inputData1 = Utility::readInputData("data/input.json");
     int ID=-1;
     //Example
-    float deviationParam = 5;
+    float deviationParam = randomFloat(1 - (float)inputData1["experimentalDeviation"]["value"] / 100, 1 + (float)inputData1["experimentalDeviation"]["value"] / 100);
     //age distribution
     double ages[] = {
         40.8, 49.6, 42.8, 46.5, 40.6, 48.7, 48.9, 32.4, 40.1, 35.3, 45.1, 35.8, 42.3, 49.4, 33.6, 44.7,
@@ -123,19 +172,35 @@ void generatePedestrian(){
             }
             case 1: {
                 Visitor visitor;
+                vector<Event>events;
                 visitor.setID(ID + 1);
                 visitor.setAge(ages[ID]);
                 visitor.setPersonality(ID>100?personalityNeurotic:personalityOpen);
                 visitor.setVelocity(ID < 122 ? (ID < 85 ? perNoDisabilityWithOvertaking : perWalkingWithCrutches) : perWalkingWithSticks);
+                for(int i=0;i<20;i++){
+                    int x = randomNumber();
+                    Event event=allEvents[x];
+                    event.setTime(allTimeDistances[x]);
+                    events.push_back(event);
+                }
+                visitor.setEvents(events);
                 pedestrians.push_back(visitor);
                 break;
             }
             case 2: {
                 Patient patient;
+                vector<Event>events;
                 patient.setID(ID + 1);
                 patient.setAge(ages[ID]);
                 patient.setPersonality(personalityNeurotic);
                 patient.setVelocity(ID > 148 ? (ID > 173 ? perTheBlind : perWheelchairs) : perWalkingWithSticks);
+                for(int i=0;i<20;i++){
+                    int x = randomNumber();
+                    Event event=allEvents[x];
+                    event.setTime(allTimeDistances[x]);
+                    events.push_back(event);
+                }
+                patient.setEvents(events);
                 pedestrians.push_back(patient);
                 break;
             }
