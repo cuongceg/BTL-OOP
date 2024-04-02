@@ -16,21 +16,28 @@ class Ward{
 private:
     string name;  
     Point entrance,exit;
-    //topLeftCorner and bottomRightCorner
-    vector<pair<Point,Point>> wallCoordinates;
+    //4 corner coordinates
+    vector<Point> wallCoordinates;
 
 public:
+    //constructor
+    Ward(Point entr,Point exit,string name,vector<Point>wall){
+        entrance=entr;
+        this->exit=exit;
+        this->name=name;
+        wallCoordinates=wall;
+    }
     // Getter methods
     string getName() const { return name; }
     Point getEntrance() const { return entrance; }
     Point getExit() const { return exit; }
-    vector<pair<Point,Point>> getWallCoordinates() { return wallCoordinates; }
+    vector<Point> getWallCoordinates() { return wallCoordinates; }
 
     // Setter methods
-    void setName(std::string n) { name = n; }
-    void setEntrance(double x,double y) {entrance.x=x;entrance.y=y;}
-    void setExit(double x,double y) { exit.x=x;exit.y=y; }
-    void setWallCoordinates(vector<pair<Point,Point>>& wall){ wallCoordinates=wall; }
+    // void setName(std::string n) { name = n; }
+    // void setEntrance(double x,double y) {entrance.x=x;entrance.y=y;}
+    // void setExit(double x,double y) { exit.x=x;exit.y=y; }
+    // void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
 };
 
 enum class Walkability {
@@ -147,5 +154,6 @@ class Visitor: public Pedestrian{
 
 class Personel: public Pedestrian{};
 vector<Event> generateEvents();
+vector<Ward> generateWard();
 void generatePedestrian();
 #endif
