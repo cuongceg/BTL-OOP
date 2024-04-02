@@ -269,7 +269,7 @@
       }
     }
   },
-  "ALKW" : {
+"ALKW" : {
     "description" : "normal distribution",
     "numberOfValues" : 100,
     "minValue" : -0.29,
@@ -297,7 +297,7 @@
     "maxValue" : 0.29,
     "numberOfFields" : 6
 },
-  "Other" : {
+"Other" : {
     "description" : "normal distribution",
     "numberOfValues" : 100,
     "minValue" : -0.99,
@@ -317,7 +317,7 @@
     "std_dev" : 1
 }
   },
-  "B" : {
+   "B" : {
    "description" : "at Brain Center",
    "normal" : {
     "description" : "normal distribution",
