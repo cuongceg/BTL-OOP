@@ -1,5 +1,6 @@
 #ifndef PEDRESTRIAN_H
 #define PEDRESTRIAN_H
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -59,7 +60,7 @@ private:
     double sad;
 
 public:
-    Emotion() : pleasure(0.0), surprise(0.0), anger(-0.2), fear(-0.2), hate(-0.4), sad(-0.4) {}
+    Emotion() : pleasure(0.75), surprise(0.5), anger(-0.2), fear(-0.2), hate(-0.4), sad(-0.4) {}
     // Getter methods
     double getPleasure() const { return pleasure; }
     double getSurprise() const { return surprise; }
@@ -137,8 +138,7 @@ public:
     double getVelocity() const { return velocity; }
     Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
-    vector<Event> getEvent(){return events;}
-    vector<vector<double>> getEvents(vector<Event> events){
+    vector<vector<double>> getEvents(){
         vector<vector<double>> allEvents(6,vector<double>(20));
         for(int i=0;i<6;i++){
             for(int j=0;j<20;j++){
@@ -163,7 +163,8 @@ class Visitor: public Pedestrian{
 };
 
 class Personel: public Pedestrian{};
-vector<Event> generateEvents();
 vector<Ward> generateWard();
+//Pedestrian generatePedestrian(); test eventsImpact
 void generatePedestrian();
+vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon);
 #endif
