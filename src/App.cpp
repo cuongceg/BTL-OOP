@@ -131,7 +131,9 @@ int main(int argc, char **argv)
     {
         glutHideWindow();
     }
-    generatePedestrian();
+    // generatePedestrian();
+    // Pedestrian pedes = generatePedestrian();
+    // vector<vector<double>>allEmo = eventsImpact(pedes,2);
     init();                   // Initialization
     glutDisplayFunc(display); // Send graphics to display window
     glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
