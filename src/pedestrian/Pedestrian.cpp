@@ -1,10 +1,12 @@
 #include "Pedestrian.hpp"
-#include <iostream>
 #include "../../lib/nlohmann/json.hpp" 
+#include "../utility/Utility.h"
+
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <random>
-#include "../utility/Utility.h"
+#include <cmath>
 
 using namespace std;
 using json = nlohmann::json;
@@ -209,11 +211,11 @@ void generatePedestrian() {
             }
         }
     }
-    // Write result on file
+    //Write result on file
     ofstream outFile("data/pedestrian.txt", ios::app);
     if (!outFile.is_open()) {
         cout << "Cann't open file" << endl;
-        return;
+        return ;
     }
     for (auto& pedestrian : pedestrians) {
         json jsonObject;
@@ -230,7 +232,7 @@ void generatePedestrian() {
         jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
         jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
         jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
-        jsonObject["events"] = pedestrian.getEvents(pedestrian.getEvent());
+        jsonObject["events"] = pedestrian.getEvents();
         outFile << jsonObject << std::endl;
     }
     outFile.close();
@@ -239,9 +241,52 @@ void generatePedestrian() {
     return;
 }
 // bai 6
-// int[6][20] eventsImpact(Pedestrian p,int timeHorizon){
-//     vector<Event> event = p.getEvent();
-//     double lambda = p.getPersonality().getLambda();
+vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon){
+    int lastTime=0,index=0;
+    vector<double> temp(6, 0.0);
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(4, 10);
+    vector<int> times(19);
+    for (int i = 0; i < 19; ++i) {
+        times[i] = dis(gen);
+    }
+    vector<vector<double>> events = p.getEvents();
+    double lambda = p.getPersonality().getLambda();
+    vector<vector<double>> allEmotions={
+        {p.getEmotion().getPleasure()},
+        {p.getEmotion().getSurprise()},
+        {p.getEmotion().getAnger()},
+        {p.getEmotion().getFear()},
+        {p.getEmotion().getHate()},
+        {p.getEmotion().getSad()}
+        };
+    for(int i=0;i<6;i++){
+        allEmotions[i].push_back(allEmotions[i][0]+events[i][0]+allEmotions[i][0]*exp(lambda));
+        cout<<"allEmotions["<<i<<"][1]="<<allEmotions[i][1]<<", events[" << i << "][0]=" << events[i][0] <<", allEmotions["<<i<<"][0]="<<allEmotions[i][0]<<endl;
+    }
+    for(int time : times){
+        cout<<time<<" ";
+    }
+    cout<<endl;
+    for (int i = 2; i < 20; i++) {
+        for (int j = 0; j < 6; j++) {
+            temp[j] = allEmotions[j][i - 1];
+        }
+        if (i - lastTime == times[index]) {
+            index++;
+            lastTime = i;
+            cout << "Su kien " << index << " xay ra luc " << i << endl;
+            for (int j = 0; j < 6; j++) {
+                temp[j] += allEmotions[j][i - 1] * exp(-lambda) + events[j][index];
+                cout << "temp[" << j << "]=" << temp[j] << ", events[" << j << "][" << index << "]=" << events[j][index] << ", allEmotions[" << j << "][" << i - 1 << "]=" << allEmotions[j][i - 1] << endl;
+            }
+        }
+        for (int j = 0; j < 6; j++) {
+            allEmotions[j].push_back(temp[j]);
+        }
+    }
 
-// } 
+    return allEmotions;
+} 
 
