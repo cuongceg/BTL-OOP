@@ -9,44 +9,45 @@
 using namespace std;
 using json = nlohmann::json;
 
-vector<Ward> generateWard(){
+vector<Ward> generateWard() {
     vector<Ward> wards;
     ifstream file("data/hospital.txt");
     string line;
-    if(file.is_open()){
-        getline(file,line);
-        for(int i=2;i<11;i++){
+    if (file.is_open()) {
+        getline(file, line);
+        for (int i = 2;i < 11;i++) {
             vector<Point>wall;
-            Point midPoint1,midPoint2,point1,point2,point3,point4;
+            Point midPoint1, midPoint2, point1, point2, point3, point4;
             double length;
             string name;
-            if (!getline(file, line)) { 
-                break; 
+            if (!getline(file, line)) {
+                break;
             }
             istringstream iss(line);
-            iss>>midPoint1.x>>midPoint1.y;
-            iss>>midPoint2.x>>midPoint2.y;
-            iss>>length;
-            iss>>name;
-            point1.x=midPoint1.x-length/2;
-            point2.x=midPoint1.x+length/2;
-            point1.y=midPoint1.y;
-            point2.y=midPoint1.y;
-            point3.x=midPoint2.x+length/2;
-            point4.x=midPoint2.x-length/2;
-            point3.y=midPoint2.y;
-            point4.y=midPoint2.y;
+            iss >> midPoint1.x >> midPoint1.y;
+            iss >> midPoint2.x >> midPoint2.y;
+            iss >> length;
+            iss >> name;
+            point1.x = midPoint1.x - length / 2;
+            point2.x = midPoint1.x + length / 2;
+            point1.y = midPoint1.y;
+            point2.y = midPoint1.y;
+            point3.x = midPoint2.x + length / 2;
+            point4.x = midPoint2.x - length / 2;
+            point3.y = midPoint2.y;
+            point4.y = midPoint2.y;
             wall.push_back(point1);
             wall.push_back(point2);
             wall.push_back(point3);
             wall.push_back(point4);
-            Ward ward =Ward(midPoint1,midPoint2,name,wall);
+            Ward ward = Ward(midPoint1, midPoint2, name, wall);
             wards.push_back(ward);
-            cout<<wards.size()<<endl;
+            cout << wards.size() << endl;
         }
         file.close();
-    }else {
-        cout << "Cann't open"<< endl;
+    }
+    else {
+        cout << "Cann't open" << endl;
     }
     return wards;
 }
@@ -65,9 +66,6 @@ vector<Event> generateEvents(){
 
             while (iss >> value) {
                 intensity.push_back(value);
-            }
-            for (const auto& value : intensity) {
-                cout << value << " ";
             }
             cout << endl;
             event.setIntensity(intensity);
@@ -88,19 +86,20 @@ float randomFloat(float lowerBound, float upperBound)
     return dis(gen);
 }
 
-int randomNumber(){
+int randomNumber(int lowerBound,int upperBound) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 42); 
+    std::uniform_int_distribution<> dis(lowerBound,upperBound);
 
     int random_number = dis(gen);
     return random_number;
 }
-void generatePedestrian(){
-    //47, 37, 37, 27, 25, 27
+//bai 3
+void generatePedestrian() {
+    //47, 37, 37, 27, 25, 27 number of people
     json inputData1;
     inputData1 = Utility::readInputData("data/input.json");
-    int ID=-1;
+    int ID = -1;
     //Example
     float deviationParam = randomFloat(1 - (float)inputData1["experimentalDeviation"]["value"] / 100, 1 + (float)inputData1["experimentalDeviation"]["value"] / 100);
     //age distribution
@@ -119,20 +118,23 @@ void generatePedestrian(){
         46.9, 56.7, 57.8, 80.2, 33.8, 75.2, 67.2, 74.0, 60.2, 62.6, 43.9, 61.3, 46.1, 72.0, 41.1, 37.2,
         69.1, 42.0, 55.8, 56.3, 58.8, 44.6, 62.9, 41.2
     };
-    int numPedestrians[] = {80,53,67};
+    int numPedestrians[] = { 80,53,67 };
     vector<Pedestrian> pedestrians;
-    vector<Event> allEvents=generateEvents();
+    vector<Event> allEvents = generateEvents();
     // 43 values likes 43 events
-    vector<double> allTimeDistances={2675, 860, 1399, 1909, 810, 2402, 1046, 3036, 1113, 1049, 1550, 1711,
-        1537, 3313, 1397, 1051, 2408, 798, 1210, 1975, 2148, 1220, 1884, 1427,
-        1207, 1604, 902, 1868, 2092, 3312, 814, 2368, 2029, 3028, 1539, 1802,
-        1321, 1530, 2025, 2308, 2808, 2037, 1982};
-    for(int i=0;i<3;i++){
-        for(int j=0;j<numPedestrians[i];j++){
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1, 43);
+    vector<double> allTimeDistances(43);
+    for(int i=0;i<42;i++){
+        allTimeDistances[i]=dis(gen);
+    }
+    for (int i = 0;i < 3;i++) {
+        for (int j = 0;j < numPedestrians[i];j++) {
             //unique ID
-            ID++;
+            ID++;   
             //personality
-            Personality personalityOpen,personalityNeurotic;
+            Personality personalityOpen, personalityNeurotic;
             personalityOpen.setLambda(double(inputData1["personalityDistribution"]["distribution"]["open"]["lambda"]));
             personalityOpen.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["positiveEmotionThreshold"]));
             personalityOpen.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["negativeEmotionThreshold"]));
@@ -146,9 +148,9 @@ void generatePedestrian(){
                 double(inputData1["walkability"]["distribution"]["noDisabilityOvertaking"]["velocity"]) * deviationParam;
             double perWalkingWithCrutches =
                 double(inputData1["walkability"]["distribution"]["crutches"]["velocity"]) * deviationParam;
-            double perWalkingWithSticks = 
+            double perWalkingWithSticks =
                 double(inputData1["walkability"]["distribution"]["sticks"]["velocity"]) * deviationParam;
-            double perWheelchairs = 
+            double perWheelchairs =
                 double(inputData1["walkability"]["distribution"]["wheelchairs"]["velocity"]) * deviationParam;
             double perTheBlind =
                 double(inputData1["walkability"]["distribution"]["blind"]["velocity"]) * deviationParam;
@@ -160,9 +162,9 @@ void generatePedestrian(){
                 personel.setAge(ages[ID]);
                 personel.setPersonality(personalityOpen);
                 personel.setVelocity(ID < 47 ? perNoDisabilityWithoutOvertaking : perNoDisabilityWithOvertaking);
-                for(int i=0;i<20;i++){
-                    int x = randomNumber();
-                    Event event=allEvents[x];
+                for (int i = 0;i < 20;i++) {
+                    int x = randomNumber(0,42);
+                    Event event = allEvents[x];
                     event.setTime(allTimeDistances[x]);
                     events.push_back(event);
                 }
@@ -175,11 +177,11 @@ void generatePedestrian(){
                 vector<Event>events;
                 visitor.setID(ID + 1);
                 visitor.setAge(ages[ID]);
-                visitor.setPersonality(ID>100?personalityNeurotic:personalityOpen);
+                visitor.setPersonality(ID > 100 ? personalityNeurotic : personalityOpen);
                 visitor.setVelocity(ID < 122 ? (ID < 85 ? perNoDisabilityWithOvertaking : perWalkingWithCrutches) : perWalkingWithSticks);
-                for(int i=0;i<20;i++){
-                    int x = randomNumber();
-                    Event event=allEvents[x];
+                for (int i = 0;i < 20;i++) {
+                    int x = randomNumber(0,42);
+                    Event event = allEvents[x];
                     event.setTime(allTimeDistances[x]);
                     events.push_back(event);
                 }
@@ -194,9 +196,9 @@ void generatePedestrian(){
                 patient.setAge(ages[ID]);
                 patient.setPersonality(personalityNeurotic);
                 patient.setVelocity(ID > 148 ? (ID > 173 ? perTheBlind : perWheelchairs) : perWalkingWithSticks);
-                for(int i=0;i<20;i++){
-                    int x = randomNumber();
-                    Event event=allEvents[x];
+                for (int i = 0;i < 20;i++) {
+                    int x = randomNumber(0,42);
+                    Event event = allEvents[x];
                     event.setTime(allTimeDistances[x]);
                     events.push_back(event);
                 }
@@ -204,17 +206,16 @@ void generatePedestrian(){
                 pedestrians.push_back(patient);
                 break;
             }
-        }       
+            }
         }
     }
-    vector<Event>test=pedestrians[0].getEvents();
-    cout<<test.size();
-    ofstream outFile("data/result.txt",ios::app);
+    // Write result on file
+    ofstream outFile("data/pedestrian.txt", ios::app);
     if (!outFile.is_open()) {
-        std::cerr << "Cann't open file" << std::endl;
-        return ;
+        cout << "Cann't open file" << endl;
+        return;
     }
-    for(auto &pedestrian:pedestrians){
+    for (auto& pedestrian : pedestrians) {
         json jsonObject;
         jsonObject["ID"] = pedestrian.getID();
         jsonObject["velocity"] = pedestrian.getVelocity();
@@ -225,16 +226,22 @@ void generatePedestrian(){
         jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
         jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
         jsonObject["age"] = pedestrian.getAge();
-        jsonObject["personality"]["name"]=pedestrian.getPersonality().getLambda()==1?"Open":"Neurotic";
-        jsonObject["personality"]["lambda"]=pedestrian.getPersonality().getLambda();
-        jsonObject["personality"]["positiveEmotionThreshold"]=pedestrian.getPersonality().getPositiveEmotionThreshold();
-        jsonObject["personality"]["negativeEmotionThreshold"]=pedestrian.getPersonality().getNegativeEmotionThreshold();
-        jsonObject["events"]["pleasure"]=pedestrian.getEvents().at(0).getIntensity();
+        jsonObject["personality"]["name"] = pedestrian.getPersonality().getLambda() == 1 ? "Open" : "Neurotic";
+        jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
+        jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
+        jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
+        jsonObject["events"] = pedestrian.getEvents(pedestrian.getEvent());
         outFile << jsonObject << std::endl;
     }
     outFile.close();
 
     cout << "Write Successfully!" << endl;
-    return ;
+    return;
 }
+// bai 6
+// int[6][20] eventsImpact(Pedestrian p,int timeHorizon){
+//     vector<Event> event = p.getEvent();
+//     double lambda = p.getPersonality().getLambda();
+
+// } 
 

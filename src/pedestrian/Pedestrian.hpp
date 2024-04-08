@@ -2,6 +2,7 @@
 #define PEDRESTRIAN_H
 #include <vector>
 #include <string>
+#include <iostream>
 
 using std::vector;
 using std::pair;
@@ -136,7 +137,16 @@ public:
     double getVelocity() const { return velocity; }
     Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
-    vector<Event> getEvents() const { return events; }
+    vector<Event> getEvent(){return events;}
+    vector<vector<double>> getEvents(vector<Event> events){
+        vector<vector<double>> allEvents(6,vector<double>(20));
+        for(int i=0;i<6;i++){
+            for(int j=0;j<20;j++){
+                allEvents[i][j]=events.at(j).getIntensity().at(i);
+            }
+        }
+        return allEvents;
+    }
     // double getWalkingTime() const { return walkingTime; }
     // double getDistance() const { return distance; }
     double getAge() const { return age; }
