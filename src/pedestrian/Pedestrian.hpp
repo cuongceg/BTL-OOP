@@ -1,7 +1,9 @@
 #ifndef PEDRESTRIAN_H
 #define PEDRESTRIAN_H
+
 #include <vector>
 #include <string>
+#include <iostream>
 
 using std::vector;
 using std::pair;
@@ -16,21 +18,28 @@ class Ward{
 private:
     string name;  
     Point entrance,exit;
-    //topLeftCorner and bottomRightCorner
-    vector<pair<Point,Point>> wallCoordinates;
+    //4 corner coordinates
+    vector<Point> wallCoordinates;
 
 public:
+    //constructor
+    Ward(Point entr,Point exit,string name,vector<Point>wall){
+        entrance=entr;
+        this->exit=exit;
+        this->name=name;
+        wallCoordinates=wall;
+    }
     // Getter methods
     string getName() const { return name; }
     Point getEntrance() const { return entrance; }
     Point getExit() const { return exit; }
-    vector<pair<Point,Point>> getWallCoordinates() { return wallCoordinates; }
+    vector<Point> getWallCoordinates() { return wallCoordinates; }
 
     // Setter methods
-    void setName(std::string n) { name = n; }
-    void setEntrance(double x,double y) {entrance.x=x;entrance.y=y;}
-    void setExit(double x,double y) { exit.x=x;exit.y=y; }
-    void setWallCoordinates(vector<pair<Point,Point>>& wall){ wallCoordinates=wall; }
+    // void setName(std::string n) { name = n; }
+    // void setEntrance(double x,double y) {entrance.x=x;entrance.y=y;}
+    // void setExit(double x,double y) { exit.x=x;exit.y=y; }
+    // void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
 };
 
 enum class Walkability {
@@ -51,7 +60,7 @@ private:
     double sad;
 
 public:
-    Emotion() : pleasure(0.0), surprise(0.0), anger(-0.2), fear(-0.2), hate(-0.4), sad(-0.4) {}
+    Emotion() : pleasure(0.75), surprise(0.5), anger(-0.2), fear(-0.2), hate(-0.4), sad(-0.4) {}
     // Getter methods
     double getPleasure() const { return pleasure; }
     double getSurprise() const { return surprise; }
@@ -63,18 +72,16 @@ public:
 
 class Event{
   private:    
-    double time,intensity;
+    double time;
+    vector<double>intensity;
   public:  
-    //contructor
-    Event(double time,double intensity): time(time),intensity(intensity){}
-
     //getter methods
     double getTime(){ return time; }
-    double getIntensity(){ return intensity; }
+    vector<double> getIntensity(){ return intensity; }
 
     //setter methods
     void setTime(double time){this->time=time;}
-    void setIntensity(double intensity){this->intensity=intensity;}
+    void setIntensity(vector<double> intensity){this->intensity=intensity;}
 };
 
 class AGVEvent:Event{};
@@ -86,14 +93,14 @@ private:
     double negativeEmotionThreshold;
 
 public:
-    // Constructors
-    Personality(double l, double p, double n)
-        : lambda(l), positiveEmotionThreshold(p), negativeEmotionThreshold(n) {}
-
+    // Setter methods
+    void setLambda(double lambda){this->lambda=lambda;}
+    void setPositiveEmotionThreshold(double pos){positiveEmotionThreshold=pos;}
+    void setNegativeEmotionThreshold(double neg){negativeEmotionThreshold=neg;}
     // Getter methods
-    double getLambda() const { return lambda; }
-    double getPositiveEmotionThreshold() const { return positiveEmotionThreshold; }
-    double getNegativeEmotionThreshold() const { return negativeEmotionThreshold; } 
+    double getLambda(){ return lambda; }
+    double getPositiveEmotionThreshold(){ return positiveEmotionThreshold; }
+    double getNegativeEmotionThreshold(){ return negativeEmotionThreshold; } 
 };
 
 class Pedestrian{
@@ -103,9 +110,9 @@ protected:
     //Ward end;
     //vector<Ward> journey;
     double velocity;
-    //Personality personality;
+    Personality personality;
     Emotion emotion=Emotion();
-    //vector<Event> events;
+    vector<Event> events;
     //double walkingTime;
     //double distance;
     double age;
@@ -121,16 +128,25 @@ public:
     void setAge(double age){this->age=age;}
     //void setWalkingTime(double time){walkingTime=time;}
     void setVelocity(double velocity){this->velocity=velocity;}
-    //void setPersonality(Personality personality){this->personality=personality;}
+    void setPersonality(Personality personality){this->personality=personality;}
+    void setEvents(vector<Event>events){this->events=events;}
     // Getter methods
     int getID() const { return ID; }
     // //Ward getStart() const { return start; }
     // //Ward getEnd() const { return end; }
     // //std::vector<Ward> getJourney() const { return journey; }
     double getVelocity() const { return velocity; }
-    // Personality getPersonality() const { return personality; }
+    Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
-    // std::vector<Event> getEvents() const { return events; }
+    vector<vector<double>> getEvents(){
+        vector<vector<double>> allEvents(6,vector<double>(20));
+        for(int i=0;i<6;i++){
+            for(int j=0;j<20;j++){
+                allEvents[i][j]=events.at(j).getIntensity().at(i);
+            }
+        }
+        return allEvents;
+    }
     // double getWalkingTime() const { return walkingTime; }
     // double getDistance() const { return distance; }
     double getAge() const { return age; }
@@ -147,5 +163,8 @@ class Visitor: public Pedestrian{
 };
 
 class Personel: public Pedestrian{};
+vector<Ward> generateWard();
+//Pedestrian generatePedestrian(); test eventsImpact
 void generatePedestrian();
+vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon);
 #endif

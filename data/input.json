@@ -215,15 +215,15 @@
     "distribution": {
       "open" : {
         "description" : "open personalities are more optimistic when facing setbacks and will be more active in solving difficulties",
-        "positiveEmotionThreshold" : "0.3",
-        "negativeEmotionThreshold" : "-0.7",
+        "positiveEmotionThreshold" : 0.3,
+        "negativeEmotionThreshold" : -0.7,
         "percentage" : 50,
         "lambda" : 1
       },  
       "neurotic" : {
         "description" : "neurotic personalities tend to behave negatively in the face of the same frustration.",
-        "positiveEmotionThreshold" : "0.6",
-        "negativeEmotionThreshold" : "-0.4",
+        "positiveEmotionThreshold" : 0.6,
+        "negativeEmotionThreshold" : -0.4,
         "percentage"  : 50,
         "lambda" : 4
       }    
@@ -269,7 +269,7 @@
       }
     }
   },
-  "ALKW" : {
+"ALKW" : {
     "description" : "normal distribution",
     "numberOfValues" : 100,
     "minValue" : -0.29,
@@ -297,7 +297,7 @@
     "maxValue" : 0.29,
     "numberOfFields" : 6
 },
-  "Other" : {
+"Other" : {
     "description" : "normal distribution",
     "numberOfValues" : 100,
     "minValue" : -0.99,
@@ -305,11 +305,11 @@
     "numberOfFields" : 6
 },
 "leavingDistribution" : {
-"description" : "distribution of start walking",
-"distribution": {
-  "A" : {
-   "description" : "at Administration Center",
-   "normal" : {
+ "description" : "distribution of start walking",
+ "distribution": {
+   "A" : {
+    "description" : "at Administration Center",
+    "normal" : {
     "description" : "normal distribution",
     "start" : "0",
     "end" : "1000" ,
@@ -317,7 +317,7 @@
     "std_dev" : 1
 }
   },
-  "B" : {
+   "B" : {
    "description" : "at Brain Center",
    "normal" : {
     "description" : "normal distribution",
