@@ -9,7 +9,6 @@
 - Chú ý trả về lỗi nếu tổng triple và single không bằng numOfAgents
 (tùy chọn bài 2)
 */
-
 #ifndef BAI4_HPP
 #define BAI4_HPP
 #include <iostream>
@@ -17,72 +16,85 @@
 #include <cmath>
 #include <random>
 #include "doc_json.hpp"
+#include "docfileTXT.hpp"
 #include "lop.hpp"
 using namespace std;
 
-vector<pair<Ward,int>> bai4(vector<Ward> input,int triple,int single)
+double rand_normal(double mean, double stddev)
 {
-    //triple số lượng người phải di chuyển đến 3 Ward
-    //single số lượng người chỉ cần đến 1 khoa/viện Ward
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<> dist(mean, stddev);
+    double output = dist(gen);
+    return output;
+}
+//triple - số đối tượng phải đi qua 3 khoa
+//single - số đối tượng đi qua 1 khoa
+vector<pair<Ward,int>> bai4(vector<Ward>& input,int triple,int single)
+{
+    
     vector<pair<Ward,int>> result;
 
-    //Tổng số người trong bệnh viện
-    int numOfAgents = get_numOfAgents();
+    int numOfAgents = get_numOfAgents();//Tổng số người trong bệnh viện
     if(numOfAgents == -1)
     {
-        cerr << "numOfAgents value could not be obtained" << endl;
+        cerr << "numOfAgents lỗi!\n" << endl;
         return result;
     }
 
     //Tổng số người đầu vào
-    int sum = triple +single;
+    int sum = triple + single;
+    //Kiểm tra dữ liệu
     if(sum != numOfAgents)
     {
         cout << "Lỗi!"<<'\n';
         return result;
     }
 
+    //Số lượng khoa
+    int sLuongWard = input.size();
     //Tổng số lượt đi qua các khoa/viện
     int total_value = triple*3 + single;
-    //Khởi tạo số ngẫu nhiên
-    random_device rd;
-    mt19937 gen(rd());
-    //Các tham số của phân phối chuẩn
     int min_value = 0;//Giá trị nhỏ nhất có thể
-    float mean = (min_value + total_value)/2;
-    float std = (total_value - min_value)/6;
-    //Cài đặt phân phối chuẩn
-    normal_distribution<float> dist(std,mean);
-
-    //Tổng của các giá trị đã sinh ngẫu nhiên
-    int current_sum = 0;
-    for(int i = 0; i < input.size();i++)
+    double mean = total_value/sLuongWard;//trung bình
+    double std = 3;//độ lệch chuẩn
+    
+    //Số lượt đi qua của từng khoa/viện
+    vector<int> number;
+    bool test = true;//Trạng thái lặp
+    while(test)
     {
-        if(total_value > 0)
+        //Xóa hết các giá trị không t/m
+        number.clear();
+        for(int i = 0; i < sLuongWard;i++)
         {
-            int x = 0;
-            do
-            {
-                //Sinh ngẫu nhiên giá trị x
-                x = dist(gen);
-            } while (x < 0 && x + current_sum > total_value);
-            x = static_cast<int>(round(x));
-            current_sum += x;
-            result.push_back(pair(input[i],x));
-            continue;
+            //Tạo ngẫu nhiên số lần đi qua khoa
+            int a = static_cast<int>(rand_normal(mean,std));
+            number.push_back(a);
         }
-        else if(i = input.size() -1  && current_sum != total_value)
+
+        //Tính tổng số lượt đi qua các khoa
+        int sum = 0;
+        for(int num : number)
         {
-            result.push_back(pair(input[i],total_value - current_sum));
+            sum = sum + num;
         }
-        else
+        //Thỏa mãn tổng các int bằng tổng số lượt
+        if(sum == total_value)
         {
-            //Tổng các giá trị đã bằng tổng
-            result.push_back(pair(input[i],0));
-        }
+            test = false;
+        }    
+    }
+
+    //Thiết lập khoa tương ứng số lượt đi qua
+    for(int i = 0; i < sLuongWard;i++)
+    {
+        pair<Ward,int> pr;
+        pr.first = input[i];
+        pr.second = number[i];
+        result.push_back(pr);
     }
     return result;
 }
 
-
- #endif
+#endif

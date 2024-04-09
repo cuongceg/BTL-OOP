@@ -24,20 +24,25 @@ cảm xúc ban đầu :
 pleasure = 0.75,surprise = 0.5,anger=fear= -0.2
 hate = sad = -0.4
 */
-
 #ifndef BAI3_H
 #define BAI3_H
 #include <iostream>
 #include <vector>
 #include <random>
+#include "docfileTXT.hpp"
+#include "khoiTaoPedestrian.hpp"
 #include "lop.hpp"
 using namespace std;
-void bai3(vector<Pedestrian> dulieu)
+void bai3(obJect &doituong)
 {
-    //lấy từ dữ liệu đầu vào có 43 sự kiện
-    vector<Event> allEvents;
-    vector<double> allTimeDistances;
+    vector<Patitent> nguoiBenh = doituong.getPatitent();
+    vector<Visitor> nguoiTham = doituong.getVisitor();
+    vector<Personel> bacSi = doituong.getPersonel();
 
+    //lấy từ dữ liệu đầu vào có 43 sự kiện
+    vector<Event> allEvents = eventTacDong();
+    //Lấy thời gian sự kiện tác động của tất cả các dối tượng
+    vector<vector<int>> allTimeDistances = timeEvents();
     //Khởi tạo generator ngẫu nhiên
     random_device rd; 
     mt19937 generator(rd());
@@ -47,17 +52,54 @@ void bai3(vector<Pedestrian> dulieu)
     //Tạo distribution để sinh số ngẫu nhiên trong phạm vi trên
     uniform_int_distribution<int> distribution(min_value,max_value);
 
-    for(auto i : dulieu)
+    //Thiết lập danh sách các Events tác động lên Patient
+    for(int i = 0; i < nguoiBenh.size();i++)
     {
-        for(int k = 0; k < 20;k++)
+        int id = nguoiBenh[i].getID();
+        vector<Event> events;
+        for(int j = 0; j < 20;j++)
         {
-            //Sinh số ngẫu nhiên
-             int X = distribution(generator);
-             //Lấy sự kiện ngẫu nhiên từ giá trị ngẫu nhiên X
-             Event event = allEvents[X];
-             event.time = allTimeDistances[X];
-             i.events.push_back(event);
+            int X = distribution(rd);
+            Event sk;
+            sk = allEvents[X];
+            sk.setTime(allTimeDistances[id][j]);
+            events.push_back(sk);
         }
+        nguoiBenh[i].setEvents(events);
     }
+    //Thiết lặp danh sách tác động lên Visitor
+    for(int i = 0; i < nguoiTham.size();i++)
+    {
+        int id = nguoiTham[i].getID();
+        vector<Event> events;
+        for(int j = 0; j < 20;j++)
+        {
+            int X = distribution(rd);
+            Event sk;
+            sk = allEvents[X];
+            sk.setTime(allTimeDistances[id][j]);
+            events.push_back(sk);
+        }
+        nguoiTham[i].setEvents(events);
+    }
+    //Thiết lập danh sách các Event tác động lên Personel
+    for(int i = 0; i < bacSi.size();i++)
+    {
+        int id = bacSi[i].getID();
+        vector<Event> events;
+        for(int j = 0; j < 20;j++)
+        {
+            int X = distribution(rd);
+            Event sk;
+            sk = allEvents[X];
+            sk.setTime(allTimeDistances[id][j]);
+            events.push_back(sk);
+        }
+        bacSi[i].setEvents(events);
+    }
+    //Cập nhật thông số cho đối tượng
+    doituong.setPatient(nguoiBenh);
+    doituong.setVisitor(nguoiTham);
+    doituong.setPersonel(bacSi);
 }
 #endif

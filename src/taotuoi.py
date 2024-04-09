@@ -4,7 +4,7 @@ import scipy.stats as stats
 import os
 
 # Nhập số lượng mẫu, số lượng các giá trị phân biệt, giá trị tối thiểu và giá trị tối đa của mẫu
-n = 30; #int(input("Nhập số lượng mẫu: "))
+n = 60; #int(input("Nhập số lượng mẫu: "))
 k = 100; #int(input("Nhập số lượng các giá trị phân biệt của mẫu: "))
 min_value = 5; #float(input("Nhập giá trị tối thiểu của mẫu: "))
 max_value = 104; #float(input("Nhập giá trị tối đa của mẫu: "))

@@ -5,9 +5,9 @@ import os
 
 # Số lượng mẫu, tổng giá trị của các mẫu, cận dưới và cận trên của các giá trị mẫu
 num_samples = 6
-total_value = 300
+total_value = 60
 lower_bound = 0
-upper_bound = 120
+upper_bound = 12
 
 # Tính giá trị trung bình và độ lệch chuẩn
 mean = total_value / num_samples
@@ -51,9 +51,9 @@ print("Tổng các giá trị của mẫu: ", np.sum(values))
 # Ghi dữ liệu ra file txt
 filename = "outputMoiLoaiDiChuyen.txt"
 with open(filename,"w") as file:
-    file.write("SUM :" + str(np.sum(values)) +'\n')
+    file.write(str(np.sum(values)) + '\n')
     for i in values:
-        file.write(str(i)+"\n")
+        file.write(str(i) + " ")
 file.close()
 print("Ghi dữ liệu thành công")
 
