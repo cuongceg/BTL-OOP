@@ -8,7 +8,7 @@
     },
     "numOfAgents":{
       "description": "Number of agents",
-      "value": 50
+      "value": 60
     },
     "ageDistribution": {
       "description": "distribution of age in pedestrians",
@@ -63,19 +63,19 @@
       "distribution": {
         "forPatient": {
           "description": "number of wards that a patient must visit",
-          "value": "3",
+          "value": 3,
           "start": "A",
           "end": "A"
         },
         "forVisitor": {
           "description": "number of wards that a visitor must visit",
-          "value": "1",
+          "value": 1,
           "start": "A",
           "end": "A"
         },
         "forPersonel": {
           "description": "number of wards that a personel must visit",
-          "value": "3",
+          "value": 3,
           "start": "wardDistribution",
           "end": "start",
           "threshold": "noDisabilityNoOvertaking + noDisabilityOvertaking"
@@ -129,15 +129,15 @@
       "distribution": {
         "open": {
           "description": "open personalities are more optimistic when facing setbacks and will be more active in solving difficulties",
-          "positiveEmotionThreshold": "0.3",
-          "negativeEmotionThreshold": "-0.7",
+          "positiveEmotionThreshold": 0.3,
+          "negativeEmotionThreshold": -0.7,
           "percentage": 50,
           "lambda": 1
         },
         "neurotic": {
           "description": "neurotic personalities tend to behave negatively in the face of the same frustration.",
-          "positiveEmotionThreshold": "0.6",
-          "negativeEmotionThreshold": "-0.4",
+          "positiveEmotionThreshold": 0.6,
+          "negativeEmotionThreshold": -0.4,
           "percentage": 50,
           "lambda": 4
         },
