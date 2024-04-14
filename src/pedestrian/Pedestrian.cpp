@@ -18,11 +18,13 @@ vector<Ward> generateWard() {
     if (file.is_open()) {
         getline(file, line);
         for (int i = 2;i < 11;i++) {
-            vector<Point>wall;
+            vector<Point>wall,entrance,exit;
             Point midPoint1, midPoint2, point1, point2, point3, point4;
+            Ward ward;
             double length;
             string name;
             if (!getline(file, line)) {
+                cout<<"Cann't read file";
                 break;
             }
             istringstream iss(line);
@@ -38,13 +40,48 @@ vector<Ward> generateWard() {
             point4.x = midPoint2.x - length / 2;
             point3.y = midPoint2.y;
             point4.y = midPoint2.y;
+            entrance.push_back(midPoint1);
+            exit.push_back(midPoint2);
             wall.push_back(point1);
             wall.push_back(point2);
             wall.push_back(point3);
             wall.push_back(point4);
-            Ward ward = Ward(midPoint1, midPoint2, name, wall);
+            ward.setEntrance(entrance);
+            ward.setExit(exit);
+            ward.setName(name);
+            ward.setWallCoordinates(wall);
             wards.push_back(ward);
-            cout << wards.size() << endl;
+        }
+        vector<Point>wall,entrance,exit;
+        Ward ward;
+        Point entrance1,entrance2,exit1,exit2, point1, point2, point3, point4;
+        if (!getline(file, line)) {
+            file.close();
+            cout<<"Can't read ward A position";
+            return wards;
+        }
+        istringstream iss(line);
+        iss>> entrance1.x >> entrance1.y >> entrance2.x >> entrance2.y;
+        iss>> exit1.x >> exit1.y >> exit2.x >> exit2.y;
+        entrance.push_back(entrance1);
+        entrance.push_back(entrance1);
+        exit.push_back(exit1);
+        exit.push_back(exit2);
+        point1.x=point4.x=exit1.x;
+        point1.y=point2.y=entrance1.y;
+        point2.x=point3.x=exit2.x;
+        point3.y=point4.y=entrance2.y;
+        wall.push_back(point1);
+        wall.push_back(point2);
+        wall.push_back(point3);
+        wall.push_back(point4);
+        ward.setEntrance(entrance);
+        ward.setExit(exit);
+        ward.setName("A");
+        ward.setWallCoordinates(wall);
+        wards.push_back(ward);
+        for(Ward ward : wards){
+            cout<<ward.getName()<<endl;
         }
         file.close();
     }
@@ -98,11 +135,13 @@ int randomNumber(int lowerBound,int upperBound) {
 }
 //bai 3
 void generatePedestrian() {
+    //declare
     //47, 37, 37, 27, 25, 27 number of people
     json inputData1;
     inputData1 = Utility::readInputData("data/input.json");
+    vector<Pedestrian> pedestrians;
+    vector<Event> allEvents = generateEvents();
     int ID = -1;
-    //Example
     float deviationParam = randomFloat(1 - (float)inputData1["experimentalDeviation"]["value"] / 100, 1 + (float)inputData1["experimentalDeviation"]["value"] / 100);
     //age distribution
     double ages[] = {
@@ -120,9 +159,8 @@ void generatePedestrian() {
         46.9, 56.7, 57.8, 80.2, 33.8, 75.2, 67.2, 74.0, 60.2, 62.6, 43.9, 61.3, 46.1, 72.0, 41.1, 37.2,
         69.1, 42.0, 55.8, 56.3, 58.8, 44.6, 62.9, 41.2
     };
+    //number of types of Pedestrians
     int numPedestrians[] = { 80,53,67 };
-    vector<Pedestrian> pedestrians;
-    vector<Event> allEvents = generateEvents();
     // 43 values likes 43 events
     random_device rd;
     mt19937 gen(rd());
@@ -131,37 +169,42 @@ void generatePedestrian() {
     for(int i=0;i<42;i++){
         allTimeDistances[i]=dis(gen);
     }
+    //personality
+    Personality personalityOpen, personalityNeurotic;
+    personalityOpen.setLambda(double(inputData1["personalityDistribution"]["distribution"]["open"]["lambda"]));
+    personalityOpen.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["positiveEmotionThreshold"]));
+    personalityOpen.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["negativeEmotionThreshold"]));
+    personalityNeurotic.setLambda(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["lambda"]));
+    personalityNeurotic.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["positiveEmotionThreshold"]));
+    personalityNeurotic.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["negativeEmotionThreshold"]));
+    //velocity
+    double perNoDisabilityWithoutOvertaking =
+        double(inputData1["walkability"]["distribution"]["noDisabilityNoOvertaking"]["velocity"]) * deviationParam;
+    double perNoDisabilityWithOvertaking =
+        double(inputData1["walkability"]["distribution"]["noDisabilityOvertaking"]["velocity"]) * deviationParam;
+    double perWalkingWithCrutches =
+        double(inputData1["walkability"]["distribution"]["crutches"]["velocity"]) * deviationParam;
+    double perWalkingWithSticks =
+        double(inputData1["walkability"]["distribution"]["sticks"]["velocity"]) * deviationParam;
+    double perWheelchairs =
+        double(inputData1["walkability"]["distribution"]["wheelchairs"]["velocity"]) * deviationParam;
+    double perTheBlind =
+        double(inputData1["walkability"]["distribution"]["blind"]["velocity"]) * deviationParam;
+    //ward
+    vector<Ward> wards= generateWard();   
+    //generate
     for (int i = 0;i < 3;i++) {
         for (int j = 0;j < numPedestrians[i];j++) {
             //unique ID
             ID++;   
-            //personality
-            Personality personalityOpen, personalityNeurotic;
-            personalityOpen.setLambda(double(inputData1["personalityDistribution"]["distribution"]["open"]["lambda"]));
-            personalityOpen.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["positiveEmotionThreshold"]));
-            personalityOpen.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["open"]["negativeEmotionThreshold"]));
-            personalityNeurotic.setLambda(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["lambda"]));
-            personalityNeurotic.setPositiveEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["positiveEmotionThreshold"]));
-            personalityNeurotic.setNegativeEmotionThreshold(double(inputData1["personalityDistribution"]["distribution"]["neurotic"]["negativeEmotionThreshold"]));
-            //velocity
-            double perNoDisabilityWithoutOvertaking =
-                double(inputData1["walkability"]["distribution"]["noDisabilityNoOvertaking"]["velocity"]) * deviationParam;
-            double perNoDisabilityWithOvertaking =
-                double(inputData1["walkability"]["distribution"]["noDisabilityOvertaking"]["velocity"]) * deviationParam;
-            double perWalkingWithCrutches =
-                double(inputData1["walkability"]["distribution"]["crutches"]["velocity"]) * deviationParam;
-            double perWalkingWithSticks =
-                double(inputData1["walkability"]["distribution"]["sticks"]["velocity"]) * deviationParam;
-            double perWheelchairs =
-                double(inputData1["walkability"]["distribution"]["wheelchairs"]["velocity"]) * deviationParam;
-            double perTheBlind =
-                double(inputData1["walkability"]["distribution"]["blind"]["velocity"]) * deviationParam;
             switch (i) {
             case 0: {
                 Personel personel;
                 vector<Event>events;
                 personel.setID(ID + 1);
                 personel.setAge(ages[ID]);
+                personel.setStartWard(wards[ID%9]);
+                personel.setEndWard(wards[ID%9]);
                 personel.setPersonality(personalityOpen);
                 personel.setVelocity(ID < 47 ? perNoDisabilityWithoutOvertaking : perNoDisabilityWithOvertaking);
                 for (int i = 0;i < 20;i++) {
@@ -179,6 +222,8 @@ void generatePedestrian() {
                 vector<Event>events;
                 visitor.setID(ID + 1);
                 visitor.setAge(ages[ID]);
+                visitor.setStartWard(wards[9]);//ward A
+                visitor.setEndWard(wards[9]);//ward A
                 visitor.setPersonality(ID > 100 ? personalityNeurotic : personalityOpen);
                 visitor.setVelocity(ID < 122 ? (ID < 85 ? perNoDisabilityWithOvertaking : perWalkingWithCrutches) : perWalkingWithSticks);
                 for (int i = 0;i < 20;i++) {
@@ -196,6 +241,8 @@ void generatePedestrian() {
                 vector<Event>events;
                 patient.setID(ID + 1);
                 patient.setAge(ages[ID]);
+                patient.setStartWard(wards[9]);//ward A
+                patient.setEndWard(wards[9]);//ward A
                 patient.setPersonality(personalityNeurotic);
                 patient.setVelocity(ID > 148 ? (ID > 173 ? perTheBlind : perWheelchairs) : perWalkingWithSticks);
                 for (int i = 0;i < 20;i++) {
@@ -221,17 +268,19 @@ void generatePedestrian() {
         json jsonObject;
         jsonObject["ID"] = pedestrian.getID();
         jsonObject["velocity"] = pedestrian.getVelocity();
-        jsonObject["emotion"]["pleasure"] = pedestrian.getEmotion().getPleasure();
-        jsonObject["emotion"]["surprise"] = pedestrian.getEmotion().getSurprise();
-        jsonObject["emotion"]["anger"] = pedestrian.getEmotion().getAnger();
-        jsonObject["emotion"]["fear"] = pedestrian.getEmotion().getFear();
-        jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
-        jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
+        // jsonObject["emotion"]["pleasure"] = pedestrian.getEmotion().getPleasure();
+        // jsonObject["emotion"]["surprise"] = pedestrian.getEmotion().getSurprise();
+        // jsonObject["emotion"]["anger"] = pedestrian.getEmotion().getAnger();
+        // jsonObject["emotion"]["fear"] = pedestrian.getEmotion().getFear();
+        // jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
+        // jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
         jsonObject["age"] = pedestrian.getAge();
+        jsonObject["start ward"] = pedestrian.getStart().getName();
+        jsonObject["end ward"] = pedestrian.getEnd().getName();
         jsonObject["personality"]["name"] = pedestrian.getPersonality().getLambda() == 1 ? "Open" : "Neurotic";
-        jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
-        jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
-        jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
+        // jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
+        // jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
+        // jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
         jsonObject["events"] = pedestrian.getEvents();
         outFile << jsonObject << std::endl;
     }

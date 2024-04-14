@@ -16,30 +16,24 @@ struct Point
 
 class Ward{
 private:
-    string name;  
-    Point entrance,exit;
+    string name;
+    //ward can have 2 entrances and exit like ward A  
+    vector<Point> entrance,exit;
     //4 corner coordinates
     vector<Point> wallCoordinates;
 
 public:
-    //constructor
-    Ward(Point entr,Point exit,string name,vector<Point>wall){
-        entrance=entr;
-        this->exit=exit;
-        this->name=name;
-        wallCoordinates=wall;
-    }
     // Getter methods
     string getName() const { return name; }
-    Point getEntrance() const { return entrance; }
-    Point getExit() const { return exit; }
+    vector<Point> getEntrance() const { return entrance; }
+    vector<Point> getExit() const { return exit; }
     vector<Point> getWallCoordinates() { return wallCoordinates; }
 
     // Setter methods
-    // void setName(std::string n) { name = n; }
-    // void setEntrance(double x,double y) {entrance.x=x;entrance.y=y;}
-    // void setExit(double x,double y) { exit.x=x;exit.y=y; }
-    // void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
+    void setName(std::string n) { name = n; }
+    void setEntrance(vector<Point> entrance){this->entrance=entrance;}
+    void setExit(vector<Point> entrance) {this->exit=exit; }
+    void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
 };
 
 enum class Walkability {
@@ -106,8 +100,8 @@ public:
 class Pedestrian{
 protected:
     int ID;
-    //Ward start;
-    //Ward end;
+    Ward start;
+    Ward end;
     //vector<Ward> journey;
     double velocity;
     Personality personality;
@@ -122,8 +116,8 @@ protected:
 public:
     // Setter methods
     void setID(int id){this->ID=id;}
-    //void setStartWard(Ward start){this->start=start;}
-    //void setEndWard(Ward end){this->end=end;}
+    void setStartWard(Ward start){this->start=start;}
+    void setEndWard(Ward end){this->end=end;}
     //void setDistance(double distance){this->distance=distance;}
     void setAge(double age){this->age=age;}
     //void setWalkingTime(double time){walkingTime=time;}
@@ -132,8 +126,8 @@ public:
     void setEvents(vector<Event>events){this->events=events;}
     // Getter methods
     int getID() const { return ID; }
-    // //Ward getStart() const { return start; }
-    // //Ward getEnd() const { return end; }
+    Ward getStart() const { return start; }
+    Ward getEnd() const { return end; }
     // //std::vector<Ward> getJourney() const { return journey; }
     double getVelocity() const { return velocity; }
     Personality getPersonality() const { return personality; }
