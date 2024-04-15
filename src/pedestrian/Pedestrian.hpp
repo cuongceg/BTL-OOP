@@ -159,6 +159,7 @@ class Visitor: public Pedestrian{
 class Personel: public Pedestrian{};
 vector<Ward> generateWard();
 //Pedestrian generatePedestrian(); test eventsImpact
-void generatePedestrian();
+vector<Pedestrian> generatePedestrian();
 vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon);
+void leavingDistribution(string name);
 #endif

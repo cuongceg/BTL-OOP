@@ -11,6 +11,28 @@
 using namespace std;
 using json = nlohmann::json;
 
+float randomFloat(float lowerBound, float upperBound)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(lowerBound, upperBound);
+    return dis(gen);
+}
+
+int randomNumber(int lowerBound,int upperBound) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(lowerBound,upperBound);
+
+    int random_number = dis(gen);
+    return random_number;
+}
+//standard distribution
+double normalDistribution(int x, double mean, double stdDev) {
+    double exponent = -(pow(x - mean, 2) / (2 * pow(stdDev, 2)));
+    return (1 / (sqrt(2 * M_PI) * stdDev)) * exp(exponent);
+}
+
 vector<Ward> generateWard() {
     vector<Ward> wards;
     ifstream file("data/hospital.txt");
@@ -80,9 +102,9 @@ vector<Ward> generateWard() {
         ward.setName("A");
         ward.setWallCoordinates(wall);
         wards.push_back(ward);
-        for(Ward ward : wards){
-            cout<<ward.getName()<<endl;
-        }
+        // for(Ward ward : wards){
+        //     cout<<ward.getName()<<endl;
+        // }
         file.close();
     }
     else {
@@ -117,24 +139,8 @@ vector<Event> generateEvents(){
     }
     return events;
 }
-float randomFloat(float lowerBound, float upperBound)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(lowerBound, upperBound);
-    return dis(gen);
-}
-
-int randomNumber(int lowerBound,int upperBound) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(lowerBound,upperBound);
-
-    int random_number = dis(gen);
-    return random_number;
-}
 //bai 3
-void generatePedestrian() {
+vector<Pedestrian> generatePedestrian() {
     //declare
     //47, 37, 37, 27, 25, 27 number of people
     json inputData1;
@@ -258,37 +264,39 @@ void generatePedestrian() {
             }
         }
     }
+    return pedestrians;
     //Write result on file
-    ofstream outFile("data/pedestrian.txt", ios::app);
-    if (!outFile.is_open()) {
-        cout << "Cann't open file" << endl;
-        return ;
-    }
-    for (auto& pedestrian : pedestrians) {
-        json jsonObject;
-        jsonObject["ID"] = pedestrian.getID();
-        jsonObject["velocity"] = pedestrian.getVelocity();
-        // jsonObject["emotion"]["pleasure"] = pedestrian.getEmotion().getPleasure();
-        // jsonObject["emotion"]["surprise"] = pedestrian.getEmotion().getSurprise();
-        // jsonObject["emotion"]["anger"] = pedestrian.getEmotion().getAnger();
-        // jsonObject["emotion"]["fear"] = pedestrian.getEmotion().getFear();
-        // jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
-        // jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
-        jsonObject["age"] = pedestrian.getAge();
-        jsonObject["start ward"] = pedestrian.getStart().getName();
-        jsonObject["end ward"] = pedestrian.getEnd().getName();
-        jsonObject["personality"]["name"] = pedestrian.getPersonality().getLambda() == 1 ? "Open" : "Neurotic";
-        // jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
-        // jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
-        // jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
-        jsonObject["events"] = pedestrian.getEvents();
-        outFile << jsonObject << std::endl;
-    }
-    outFile.close();
+    // ofstream outFile("data/pedestrian.txt", ios::app);
+    // if (!outFile.is_open()) {
+    //     cout << "Cann't open file" << endl;
+    //     return pedestrians;
+    // }
+    // for (auto& pedestrian : pedestrians) {
+    //     json jsonObject;
+    //     jsonObject["ID"] = pedestrian.getID();
+    //     jsonObject["velocity"] = pedestrian.getVelocity();
+    //     // jsonObject["emotion"]["pleasure"] = pedestrian.getEmotion().getPleasure();
+    //     // jsonObject["emotion"]["surprise"] = pedestrian.getEmotion().getSurprise();
+    //     // jsonObject["emotion"]["anger"] = pedestrian.getEmotion().getAnger();
+    //     // jsonObject["emotion"]["fear"] = pedestrian.getEmotion().getFear();
+    //     // jsonObject["emotion"]["hate"] = pedestrian.getEmotion().getHate();
+    //     // jsonObject["emotion"]["sad"] = pedestrian.getEmotion().getSad();
+    //     jsonObject["age"] = pedestrian.getAge();
+    //     jsonObject["start ward"] = pedestrian.getStart().getName();
+    //     jsonObject["end ward"] = pedestrian.getEnd().getName();
+    //     jsonObject["personality"]["name"] = pedestrian.getPersonality().getLambda() == 1 ? "Open" : "Neurotic";
+    //     // jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
+    //     // jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
+    //     // jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
+    //     jsonObject["events"] = pedestrian.getEvents();
+    //     outFile << jsonObject << std::endl;
+    // }
+    // outFile.close();
 
-    cout << "Write Successfully!" << endl;
-    return;
+    // cout << "Write Successfully!" << endl;
+    // return pedestrians;
 }
+
 // bai 6
 vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon){
     int lastTime=0,index=0;
@@ -325,7 +333,7 @@ vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon){
         if (i - lastTime == times[index]) {
             index++;
             lastTime = i;
-            cout << "Su kien " << index << " xay ra luc " << i << endl;
+            cout << "Event " << index << " occurs at " << i << endl;
             for (int j = 0; j < 6; j++) {
                 temp[j] += allEmotions[j][i - 1] * exp(-lambda) + events[j][index];
                 cout << "temp[" << j << "]=" << temp[j] << ", events[" << j << "][" << index << "]=" << events[j][index] << ", allEmotions[" << j << "][" << i - 1 << "]=" << allEmotions[j][i - 1] << endl;
@@ -337,5 +345,34 @@ vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon){
     }
 
     return allEmotions;
-} 
+}
+
+//bai8
+void leavingDistribution(string name){
+    int totalValue=0;
+    json inputData1;
+    inputData1 = Utility::readInputData("data/input.json");
+    string start = inputData1["leavingDistribution"]["distribution"][name]["normal"]["start"];
+    string end = inputData1["leavingDistribution"]["distribution"][name]["normal"]["end"];
+    string timeSte = inputData1["leavingDistribution"]["distribution"][name]["normal"]["timeStep"];
+    int stdDev = inputData1["leavingDistribution"]["distribution"][name]["normal"]["std_dev"];
+    int startTime=stoi(start);
+    int endTime=stoi(end);
+    int timeStep=stoi(timeSte);
+    double numberOfValue = (double)(endTime-startTime+1)/timeStep;
+    
+    vector<Pedestrian>pedestrians=generatePedestrian();
+    for(Pedestrian pedestrian : pedestrians){
+        if(pedestrian.getEnd().getName().compare(name)==0){
+            totalValue++;
+        }
+    }
+    double meanValue= (double)totalValue/numberOfValue;
+    for (int i = startTime; i <= 10; i += 2) {
+        double numLeavers = normalDistribution(i, meanValue, stdDev) * totalValue;
+        cout << "Time " << i << ": " << numLeavers << " people leaving from ward "<<name << endl;
+    }
+}
+//bai 9
+
 
