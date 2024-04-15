@@ -95,6 +95,7 @@ int main(int argc, char **argv)
                         std::string random_key = it->first;
                         juncName.assign(random_key);
                     }
+                    cout<<mapData[juncName].size()<<endl;
 
                 } while (mapData[juncName].size() < 3);
                 juncData = mapData[juncName];
@@ -115,7 +116,6 @@ int main(int argc, char **argv)
     float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
     // Threshold people stopping at the corridor
     threshold = int(inputData["numOfAgents"]["value"]) * deviationParam * (float)(inputData["stopAtHallway"]["value"]) / 100;
-
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
                         GLUT_DEPTH);         // Set display mode  Default mode used
@@ -132,6 +132,7 @@ int main(int argc, char **argv)
         glutHideWindow();
     }
     // generatePedestrian();
+    // leavingDistribution("A");
     // Pedestrian pedes = generatePedestrian();
     // vector<vector<double>>allEmo = eventsImpact(pedes,2);
     init();                   // Initialization
@@ -198,14 +199,24 @@ void createWalls()
     Wall *wall;
 
     vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
+    wall = new Wall(-22,11,22,11);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+
+    wall = new Wall(-22,-11,22,-11);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+
 
     if (juncData.size() == 2)
     {
         // Upper Wall
         wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
         // Lower Wall
         wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
     }
     else
@@ -214,42 +225,51 @@ void createWalls()
         if (juncData.size() == 4)
         {
             wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
 
             wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
         else if (juncData.size() == 3)
         {
             wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
 
         // Lower Wall
         wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
 
         wall = new Wall(coors[12], coors[13], coors[14], coors[15]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
 
         // Left Wall
         if (juncData.size() == 4)
         {
             wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
 
         wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
 
         // Right Wall
         if (juncData.size() == 4)
         {
             wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
 
         wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
+        wall->setWallColor(0,50,0);
         socialForce->addWall(wall);
     }
 }
