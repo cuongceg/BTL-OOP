@@ -9,7 +9,9 @@ Wall::Wall(float x1, float y1, float x2, float y2) {
     wall.start.set(x1, y1, 0.0);
     wall.end.set(x2, y2, 0.0);
 }
-
+void Wall::setWallColor(float red, float green, float blue){
+    colorWall.set(red / 255, green / 255, blue / 255);
+}
 Point3f Wall::getNearestPoint(Point3f position_i) {
     Vector3f relativeEnd, relativePos, relativeEndScal, relativePosScal;
     float dotProduct;

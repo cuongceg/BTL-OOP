@@ -213,10 +213,10 @@ void Renderer::drawWalls(SocialForce *socialForce)
 {
     vector<Wall *> walls = socialForce->getWalls();
 
-    glColor3f(0.2F, 0.2F, 0.2F);
     glPushMatrix();
     for (Wall *wall : walls)
     {
+        glColor3f(wall->getWallColor().x, wall->getWallColor().y, wall->getWallColor().z);
         glBegin(GL_LINES);
         glVertex2f(wall->getStartPoint().x, wall->getStartPoint().y);
         glVertex2f(wall->getEndPoint().x, wall->getEndPoint().y);
