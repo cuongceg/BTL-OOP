@@ -10,6 +10,7 @@
 #include "model/SocialForce.h"
 #include "constant/Constant.h"
 #include "renderer/Renderer.h"
+#include "pedestrian/Pedestrian.hpp"
 
 using namespace std;
 using namespace Constant;
@@ -130,7 +131,9 @@ int main(int argc, char **argv)
     {
         glutHideWindow();
     }
-
+    // generatePedestrian();
+    // Pedestrian pedes = generatePedestrian();
+    // vector<vector<double>>allEmo = eventsImpact(pedes,2);
     init();                   // Initialization
     glutDisplayFunc(display); // Send graphics to display window
     glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,

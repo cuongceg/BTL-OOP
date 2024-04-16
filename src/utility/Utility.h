@@ -4,8 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <array>
-#include <lib/nlohmann/json.hpp>
-#include "lib/vecmath/vecmath.h"
+#include "../../lib/nlohmann/json.hpp"
+#include "../../lib/vecmath/vecmath.h"
 #include <map>
 #include "src/agv/AGV.h"
 
@@ -23,6 +23,8 @@ namespace Utility
     bool hallwaySameCharExists(float hallwayLength, std::vector<json> data);
 
     json readInputData(const char *fileName);
+
+    std::map<std::string, std::vector<float>> readHosData(const char *fileName);
 
     void writeResult(
         const char *fileName, std::string name, int mode, std::vector<AGV *> data,
