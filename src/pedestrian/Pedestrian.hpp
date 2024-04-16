@@ -78,7 +78,7 @@ class Event{
     void setIntensity(vector<double> intensity){this->intensity=intensity;}
 };
 
-class AGVEvent:Event{};
+class AGVEvent:public Event{};
 
 class Personality {
 private:
@@ -132,7 +132,7 @@ public:
     double getVelocity() const { return velocity; }
     Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
-    vector<vector<double>> getEvents(){
+    vector<vector<double>> getEventsIntensity(){
         vector<vector<double>> allEvents(6,vector<double>(20));
         for(int i=0;i<6;i++){
             for(int j=0;j<20;j++){
@@ -140,6 +140,13 @@ public:
             }
         }
         return allEvents;
+    }
+    vector<int> getEventsTime(){
+        vector<int> time;
+        for(int i=0;i<19;i++){
+            time.push_back(events.at(i).getTime());
+        }
+        return time;
     }
     // double getWalkingTime() const { return walkingTime; }
     // double getDistance() const { return distance; }
