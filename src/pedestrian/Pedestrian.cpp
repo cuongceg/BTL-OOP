@@ -167,7 +167,7 @@ vector<Pedestrian> generatePedestrian() {
     };
     //number of types of Pedestrians
     int numPedestrians[] = { 80,53,67 };
-    // 43 values likes 43 events
+    // 43 elements likes 43 events
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> dis(1, 43);
@@ -288,7 +288,7 @@ vector<Pedestrian> generatePedestrian() {
     //     // jsonObject["personality"]["lambda"] = pedestrian.getPersonality().getLambda();
     //     // jsonObject["personality"]["positiveEmotionThreshold"] = pedestrian.getPersonality().getPositiveEmotionThreshold();
     //     // jsonObject["personality"]["negativeEmotionThreshold"] = pedestrian.getPersonality().getNegativeEmotionThreshold();
-    //     jsonObject["events"] = pedestrian.getEvents();
+    //     jsonObject["events"] = pedestrian.getEventsIntensity();
     //     outFile << jsonObject << std::endl;
     // }
     // outFile.close();
@@ -301,14 +301,8 @@ vector<Pedestrian> generatePedestrian() {
 vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon){
     int lastTime=0,index=0;
     vector<double> temp(6, 0.0);
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> dis(4, 10);
-    vector<int> times(19);
-    for (int i = 0; i < 19; ++i) {
-        times[i] = dis(gen);
-    }
-    vector<vector<double>> events = p.getEvents();
+    vector<int> times=p.getEventsTime();
+    vector<vector<double>> events = p.getEventsIntensity();
     double lambda = p.getPersonality().getLambda();
     vector<vector<double>> allEmotions={
         {p.getEmotion().getPleasure()},
@@ -373,6 +367,5 @@ void leavingDistribution(string name){
         cout << "Time " << i << ": " << numLeavers << " people leaving from ward "<<name << endl;
     }
 }
-//bai 9
 
 
