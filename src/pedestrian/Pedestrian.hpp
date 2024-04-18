@@ -26,13 +26,13 @@ public:
     // Getter methods
     string getName() const { return name; }
     vector<Point> getEntrance() const { return entrance; }
-    vector<Point> getExit() const { return exit; }
+    vector<Point> getExit() const { return this->exit; }
     vector<Point> getWallCoordinates() { return wallCoordinates; }
 
     // Setter methods
     void setName(std::string n) { name = n; }
     void setEntrance(vector<Point> entrance){this->entrance=entrance;}
-    void setExit(vector<Point> entrance) {this->exit=exit; }
+    void setExit(vector<Point> exit) {this->exit=exit; }
     void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
 };
 

@@ -86,7 +86,7 @@ vector<Ward> generateWard() {
         iss>> entrance1.x >> entrance1.y >> entrance2.x >> entrance2.y;
         iss>> exit1.x >> exit1.y >> exit2.x >> exit2.y;
         entrance.push_back(entrance1);
-        entrance.push_back(entrance1);
+        entrance.push_back(entrance2);
         exit.push_back(exit1);
         exit.push_back(exit2);
         point1.x=point4.x=exit1.x;
@@ -102,9 +102,6 @@ vector<Ward> generateWard() {
         ward.setName("A");
         ward.setWallCoordinates(wall);
         wards.push_back(ward);
-        // for(Ward ward : wards){
-        //     cout<<ward.getName()<<endl;
-        // }
         file.close();
     }
     else {
