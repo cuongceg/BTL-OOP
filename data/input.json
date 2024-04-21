@@ -1,7 +1,7 @@
 {
   "runMode": {
     "description": "Run mode (1 - Statistical calculation, 0 - Test)",
-    "value": 0
+    "value": 1
   },
   "noRunPerHallway": {
     "description": "Number of times the AGV runs for each hallway",
@@ -13,7 +13,7 @@
   },
   "numOfAgents": {
     "description": "Number of agents",
-    "value": 200
+    "value": 10
   },
   "TDDegree": {
     "description": "T-Distribution' degree of freedom",
@@ -77,7 +77,7 @@
   },
   "hallwayWidth": {
     "description": "Hallway width",
-    "value": 6
+    "value": 50
   },
   "runConcurrently": {
     "description": "AGV run concurrently",
