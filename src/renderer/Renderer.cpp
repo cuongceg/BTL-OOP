@@ -234,7 +234,8 @@ void Renderer::drawText(float x, float y, const char text[])
     glPushMatrix();
     glTranslatef(x, y, 0.0);
     glScalef(0.0045F, 0.0045F, 0.0);
-    glLineWidth(0.8F);
+    glColor3f(0.0, 0.0, 0.0);
+    glLineWidth(0.1F);
 
     int idx = 0;
     while (text[idx] != '\0')
