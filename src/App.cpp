@@ -95,7 +95,6 @@ int main(int argc, char **argv)
                         std::string random_key = it->first;
                         juncName.assign(random_key);
                     }
-                    cout<<mapData[juncName].size()<<endl;
 
                 } while (mapData[juncName].size() < 3);
                 juncData = mapData[juncName];
@@ -131,10 +130,9 @@ int main(int argc, char **argv)
     {
         glutHideWindow();
     }
-    // generatePedestrian();
     // leavingDistribution("A");
-    // Pedestrian pedes = generatePedestrian();
-    // vector<vector<double>>allEmo = eventsImpact(pedes,2);
+    // vector<Pedestrian> pedestrians = generatePedestrian();
+    // vector<vector<double>>allEmo = eventsImpact(pedestrians[0],2);
     init();                   // Initialization
     glutDisplayFunc(display); // Send graphics to display window
     glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
@@ -143,7 +141,7 @@ int main(int argc, char **argv)
     glutKeyboardFunc(normalKey);
     glutIdleFunc(update); // Continuously execute 'update()'
     glutMainLoop();       // Enter GLUT's main loop
-
+    
     return 0;
 }
 
@@ -194,93 +192,68 @@ void init()
     createAGVs();
 }
 
-void createWalls()
-{
+void createWalls(){
     Wall *wall;
-
-    vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
-    wall = new Wall(-22,11,22,11);
+    //upper wall
+    wall = new Wall(-11,11,21,11);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //lower wall
+    wall = new Wall(-11,-11,21,-11);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //left wall
+    wall = new Wall(-11,11,-11,-11);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //right wall
+    wall = new Wall(21,11,21,-11);
     wall->setWallColor(232,39,35);
     socialForce->addWall(wall);
 
-    wall = new Wall(-22,-11,22,-11);
-    wall->setWallColor(232,39,35);
-    socialForce->addWall(wall);
-
-
-    if (juncData.size() == 2)
-    {
-        // Upper Wall
-        wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
-        // Lower Wall
-        wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
-    }
-    else
-    {
-        // Upper Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
-            wall->setWallColor(0,50,0);
-            socialForce->addWall(wall);
-
-            wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
+    vector<Ward> wards= generateWard();
+    for(Ward ward : wards){
+        vector<Point> wallCoors = ward.getWallCoordinates();
+        string name = ward.getName();
+        for(int i=0;i<4;i++){
+            wall = new Wall(wallCoors[i].x,wallCoors[i].y,wallCoors[(i+1)%4].x,wallCoors[(i+1)%4].y);
             wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
-        else if (juncData.size() == 3)
-        {
-            wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
-            wall->setWallColor(0,50,0);
-            socialForce->addWall(wall);
+}
+}
+
+void createLabel(){
+    vector<Ward> wards= generateWard();
+    for(Ward ward : wards){
+        int cnt=1;
+        vector<Point> entrance = ward.getEntrance();
+        vector<Point> exit = ward.getExit();
+        string name = ward.getName();
+        for (Point point : entrance){
+            string entrName = name + to_string(cnt);
+            if(name=="A"&& cnt==2){
+                drawText(point.x-0.3,point.y,entrName.c_str());}
+            else{
+            drawText(point.x-0.3,point.y-0.5,entrName.c_str());}
+            cnt++;
         }
-
-        // Lower Wall
-        wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
-
-        wall = new Wall(coors[12], coors[13], coors[14], coors[15]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
-
-        // Left Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
-            wall->setWallColor(0,50,0);
-            socialForce->addWall(wall);
+        
+        for (Point point : exit){
+            string exitName = name + to_string(cnt);
+            if(name=="A"&& cnt==3){
+                drawText(point.x,point.y,exitName.c_str());}
+            else if(name=="A"&& cnt==4){
+                drawText(point.x-0.6,point.y,exitName.c_str());}
+            else{    
+            drawText(point.x-0.3,point.y,exitName.c_str());}
+            cnt++;
         }
-
-        wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
-
-        // Right Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
-            wall->setWallColor(0,50,0);
-            socialForce->addWall(wall);
-        }
-
-        wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
-        wall->setWallColor(0,50,0);
-        socialForce->addWall(wall);
     }
 }
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump)
 {
-    // if (socialForce->getCrowdSize() < threshold)
-    // {
-    //     agent->setStopAtCorridor(true);
-    // }
-
     int codeSrc = 0;
     int codeDes = 0;
 
@@ -630,8 +603,8 @@ void display()
 
     glPushMatrix();
     glScalef(1.0, 1.0, 1.0);
-
     drawAgents(socialForce);
+    createLabel();
     drawAGVs(socialForce, juncData, (int)inputData["runConcurrently"]["value"], (int)inputData["runMode"]["value"]);
     drawWalls(socialForce);
     glPopMatrix();
