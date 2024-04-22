@@ -5,36 +5,12 @@
 #include <string>
 #include <iostream>
 
+#include "../ward/Ward.h"
+#include "../event/Event.h"
+
 using std::vector;
 using std::pair;
 using std::string;
-
-struct Point
-{
-   double x,y;
-};
-
-class Ward{
-private:
-    string name;
-    //ward can have 2 entrances and exit like ward A  
-    vector<Point> entrance,exit;
-    //4 corner coordinates
-    vector<Point> wallCoordinates;
-
-public:
-    // Getter methods
-    string getName() const { return name; }
-    vector<Point> getEntrance() const { return entrance; }
-    vector<Point> getExit() const { return this->exit; }
-    vector<Point> getWallCoordinates() { return wallCoordinates; }
-
-    // Setter methods
-    void setName(std::string n) { name = n; }
-    void setEntrance(vector<Point> entrance){this->entrance=entrance;}
-    void setExit(vector<Point> exit) {this->exit=exit; }
-    void setWallCoordinates(vector<Point> wall){ wallCoordinates=wall; }
-};
 
 enum class Walkability {
     noDisability,
@@ -64,22 +40,6 @@ public:
     double getSad() const { return sad; }  
 };
 
-class Event{
-  private:    
-    double time;
-    vector<double>intensity;
-  public:  
-    //getter methods
-    double getTime(){ return time; }
-    vector<double> getIntensity(){ return intensity; }
-
-    //setter methods
-    void setTime(double time){this->time=time;}
-    void setIntensity(vector<double> intensity){this->intensity=intensity;}
-};
-
-class AGVEvent:public Event{};
-
 class Personality {
 private:
     double lambda;
@@ -99,10 +59,10 @@ public:
 
 class Pedestrian{
 protected:
-    int ID;
+    string ID;
     Ward start;
     Ward end;
-    //vector<Ward> journey;
+    vector<Ward> journey;
     double velocity;
     Personality personality;
     Emotion emotion=Emotion();
@@ -115,7 +75,7 @@ protected:
 
 public:
     // Setter methods
-    void setID(int id){this->ID=id;}
+    void setID(string id){this->ID=id;}
     void setStartWard(Ward start){this->start=start;}
     void setEndWard(Ward end){this->end=end;}
     //void setDistance(double distance){this->distance=distance;}
@@ -124,11 +84,12 @@ public:
     void setVelocity(double velocity){this->velocity=velocity;}
     void setPersonality(Personality personality){this->personality=personality;}
     void setEvents(vector<Event>events){this->events=events;}
+    void setJourney(vector<Ward> journey){this->journey=journey;}
     // Getter methods
-    int getID() const { return ID; }
+    string getID() const { return ID; }
     Ward getStart() const { return start; }
     Ward getEnd() const { return end; }
-    // //std::vector<Ward> getJourney() const { return journey; }
+    vector<Ward> getJourney() const { return journey; }
     double getVelocity() const { return velocity; }
     Personality getPersonality() const { return personality; }
     Emotion getEmotion() const { return emotion; }
@@ -164,9 +125,7 @@ class Visitor: public Pedestrian{
 };
 
 class Personel: public Pedestrian{};
-vector<Ward> generateWard();
-//Pedestrian generatePedestrian(); test eventsImpact
-vector<Pedestrian> generatePedestrian();
+vector<Pedestrian> generatePedestrian(int writeToFile);
 vector<vector<double>> eventsImpact(Pedestrian p,int timeHorizon);
 void leavingDistribution(string name);
 #endif
