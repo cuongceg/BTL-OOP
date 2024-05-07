@@ -138,7 +138,9 @@ std::map<std::string, std::vector<float>> Utility::readHosData(
 {
     std::map<std::string, std::vector<float>> Map;
     std::ifstream input(fileName);
-
+    if(!input.is_open()){
+        cout<<"Cann't open file"<<endl;
+    }
     std::string delimiter = " ";
 
     int lineNo = 1;
@@ -807,85 +809,129 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
     case 0:
         switch (sampled_value)
         {
+            // ward G
         case 0:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark + centerLength / 2,
-                                           -horLandmark + totalLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+                     {Utility::randomFloat(-6,-4),
+                      Utility::randomFloat(10,11)});
             return v;
             break;
         case 1:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark - centerLength / 2,
-                                           -horLandmark + centerLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+                     {Utility::randomFloat(4,6),
+                      Utility::randomFloat(10,11)});
             return v;
             break;
         case 2:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark - totalLength / 2,
-                                           -horLandmark - centerLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+                     {Utility::randomFloat(-6,-8),
+                      Utility::randomFloat(-1,0)});
             return v;
-            break;
+            break;      
         default:
             break;
         }
         break;
+        // switch (sampled_value)
+        // {
+        // case 0:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(-horLandmark + centerLength / 2,
+        //                                    -11),
+        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+        //     return v;
+        //     break;
+        // case 1:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(-horLandmark - centerLength / 2,
+        //                                    -11),
+        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+        //     return v;
+        //     break;
+        // case 2:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(-horLandmark - totalLength / 2,
+        //                                    -11),
+        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+        //     return v;
+        //     break;
+        // default:
+        //     break;
+        // }
+        // break;
 
         // From Right to Left
     case 1:
-        switch (sampled_value)
-        {
-        case 0:
-            v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark - totalLength / 2,
-                                           horLandmark - centerLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-            return v;
-            break;
-        case 1:
-            v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark - centerLength / 2,
-                                           horLandmark + centerLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-            return v;
-            break;
-        case 2:
-            v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark + centerLength / 2,
-                                           horLandmark + totalLength / 2),
-                      Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-            return v;
-            break;
-        default:
-            break;
-        }
+    switch (sampled_value)
+    {
+    case 0:
+        v.insert(v.end(),
+                     {Utility::randomFloat(-9,-1),
+                      Utility::randomFloat(-6,-5)});
+        return v;
         break;
+    case 1:
+        v.insert(v.end(),
+                     {Utility::randomFloat(-9,-1),
+                      Utility::randomFloat(-11,-10)});
+            return v;
+            break;
+    case 2:
+        v.insert(v.end(),
+                     {Utility::randomFloat(-9,-1),
+                      Utility::randomFloat(-6,-5)});
+        return v;
+        break;    
+    default:
+        break;
+    }
+        break;
+        // switch (sampled_value)
+        // {
+        // case 0:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(-9,-1),
+        //               Utility::randomFloat(-8,-6)});
+        //     return v;
+        //     break;
+        // case 1:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(21,
+        //                                    horLandmark + centerLength / 2),
+        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+        //     return v;
+        //     break;
+        // case 2:
+        //     v.insert(v.end(),
+        //              {Utility::randomFloat(21,
+        //                                    horLandmark + totalLength / 2),
+        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
+        //     return v;
+        //     break;
+        // default:
+        //     break;
+        // }
 
-        // From Top to Bottom
+    // From Top to Bottom
     case 2:
         switch (sampled_value)
         {
         case 0:
             v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(verLandmark - totalLength / 2,
-                                           verLandmark - centerLength / 2)});
+                     {Utility::randomFloat(14,16),
+                      Utility::randomFloat(10,11)});
             return v;
             break;
         case 1:
             v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(verLandmark - centerLength / 2,
-                                           verLandmark + centerLength / 2)});
+                     {Utility::randomFloat(-8,-6),
+                      Utility::randomFloat(4,5)});
             return v;
             break;
         case 2:
             v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(verLandmark + centerLength / 2,
-                                           verLandmark + totalLength / 2)});
+                     {Utility::randomFloat(0,1),
+                      Utility::randomFloat(4,5)});
             return v;
             break;
         default:
@@ -899,9 +945,8 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
         {
         case 0:
             v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(-verLandmark + centerLength / 2,
-                                           -verLandmark + totalLength / 2)});
+                     {Utility::randomFloat(9,10),
+                      Utility::randomFloat(4,5)});
             return v;
             break;
         case 1:
