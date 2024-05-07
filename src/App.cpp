@@ -11,6 +11,8 @@
 #include "constant/Constant.h"
 #include "renderer/Renderer.h"
 #include "pedestrian/Pedestrian.hpp"
+#include "ward/Ward.h"
+#include "event/Event.h"
 
 using namespace std;
 using namespace Constant;
@@ -130,9 +132,10 @@ int main(int argc, char **argv)
     {
         glutHideWindow();
     }
-    // leavingDistribution("A");
-    // vector<Pedestrian> pedestrians = generatePedestrian();
-    // vector<vector<double>>allEmo = eventsImpact(pedestrians[0],2);
+    // generatePedestrian(1);
+    // // leavingDistribution("A");
+    // // vector<Pedestrian> pedestrians = generatePedestrian(0);
+    // // vector<vector<double>>allEmo = eventsImpact(pedestrians[0],2);
     init();                   // Initialization
     glutDisplayFunc(display); // Send graphics to display window
     glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
@@ -141,7 +144,6 @@ int main(int argc, char **argv)
     glutKeyboardFunc(normalKey);
     glutIdleFunc(update); // Continuously execute 'update()'
     glutMainLoop();       // Enter GLUT's main loop
-    
     return 0;
 }
 
@@ -193,25 +195,26 @@ void init()
 }
 
 void createWalls(){
+    vector<Point> wallCoors = generateAroundWard();
+    vector<Ward> wards= generateWard();
     Wall *wall;
     //upper wall
-    wall = new Wall(-11,11,21,11);
+    wall = new Wall(wallCoors.at(3).x,wallCoors.at(3).y-1,wallCoors.at(0).x,wallCoors.at(0).y-1);
     wall->setWallColor(232,39,35);
     socialForce->addWall(wall);
     //lower wall
-    wall = new Wall(-11,-11,21,-11);
+    wall = new Wall(wallCoors.at(2).x,wallCoors.at(2).y+1,wallCoors.at(1).x,wallCoors.at(1).y+1);
     wall->setWallColor(232,39,35);
     socialForce->addWall(wall);
     //left wall
-    wall = new Wall(-11,11,-11,-11);
+    wall = new Wall(wallCoors.at(2).x,wallCoors.at(2).y+1,wallCoors.at(3).x,wallCoors.at(3).y-1);
     wall->setWallColor(232,39,35);
     socialForce->addWall(wall);
     //right wall
-    wall = new Wall(21,11,21,-11);
+    wall = new Wall(wallCoors.at(0).x,wallCoors.at(0).y-1,wallCoors.at(1).x,wallCoors.at(1).y+1);
     wall->setWallColor(232,39,35);
     socialForce->addWall(wall);
 
-    vector<Ward> wards= generateWard();
     for(Ward ward : wards){
         vector<Point> wallCoors = ward.getWallCoordinates();
         string name = ward.getName();
@@ -409,30 +412,6 @@ void createAgents()
     if (juncData.size() == 2)
     {
         for (int idx = 0; idx < 6; idx++)
-        {
-            for (int temp = 0; temp < numOfPeople[idx]; temp++)
-            {
-                agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
-                pedesCount = pedesCount + 1;
-            }
-        }
-    }
-    else if (juncData.size() == 3)
-    {
-        for (int idx = 0; idx < 18; idx++)
-        {
-            for (int temp = 0; temp < numOfPeople[idx]; temp++)
-            {
-                agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
-                pedesCount = pedesCount + 1;
-            }
-        }
-    }
-    else if (juncData.size() == 4)
-    {
-        for (int idx = 0; idx < 12; idx++)
         {
             for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {

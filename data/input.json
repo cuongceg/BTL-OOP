@@ -13,7 +13,7 @@
   },
   "numOfAgents": {
     "description": "Number of agents",
-    "value": 10
+    "value": 200
   },
   "TDDegree": {
     "description": "T-Distribution' degree of freedom",
