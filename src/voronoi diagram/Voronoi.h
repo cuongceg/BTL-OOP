@@ -66,9 +66,9 @@ Voronoi::Voronoi(double larghezza,double lunghezza,std::vector<Ostacolo*> ostaco
 	this->lunghezza=lunghezza;
 	this->larghezza=larghezza;
 	
-	std::cout<<"Sto cercando i punti di voronoi"<<std::endl;
+	std::cout<<"Looking for voronoi points"<<std::endl;
 	CreaVoronoi();
-	std::cout<<"Mappa di voronoi creata"<<std::endl;
+	std::cout<<"Voronoi map was created"<<std::endl;
 }
 
 std::vector<Ostacolo*> *Voronoi::getOstacoli(){
@@ -131,7 +131,7 @@ void Voronoi::CreaVoronoi(){
 
 
 std::vector<Punto> Voronoi::getPercorso(Punto partenza,Punto arrivo){
-	std::cout<<"Calcolo il percorso"<<std::endl;
+	std::cout<<"Calculating the route"<<std::endl;
 	
 	std::vector<Punto> percorso;
 	percorso.push_back(partenza); //solo temporaneo
@@ -235,7 +235,7 @@ std::vector<Punto*> Voronoi::getPercorsoVoronoi(Punto partenza,Punto arrivo,std:
 			punti_passati.push_back(tmp);
 		}else{
 			alternativo:
-			std::cout<<"Non ci sono riuscito, ritento"<<std::endl;
+			std::cout<<"Didn't succeed, trying again"<<std::endl;
 		
 			percorso.clear();
 			punti_passati.clear();
@@ -260,11 +260,11 @@ std::vector<Punto*> Voronoi::getPercorsoVoronoi(Punto partenza,Punto arrivo,std:
 			}
 			
 			if(incrocio_vicino==NULL) {
-				std::cout<<"Impossibile trovare un percorso"<<std::endl;
+				std::cout<<"Unable to find a route"<<std::endl;
 				exit(-1);
 			}
 			
- 			std::cout<<"incrocio vicino scelto: "<<incrocio_vicino->getX()<<" "<<incrocio_vicino->getY();
+ 			std::cout<<"Chosen nearby intersection: "<<incrocio_vicino->getX()<<" "<<incrocio_vicino->getY();
 			
 			if(incroci_s==NULL){
 				std::vector<Punto*> incroci_scelti;
