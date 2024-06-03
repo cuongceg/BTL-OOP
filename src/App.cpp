@@ -277,13 +277,26 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
     if(distance<5){
         agent->setPath(destination[0], destination[1], 0.5);
     }else{
-        Punto *begin = new Punto(position[0],position[1]);
-        Punto *end = new Punto(destination[0],destination[1]);
-        std::vector<Punto> path = pathVoronoi(begin,end);
-        for(Punto p : path){
-        cout<<p.getX()<<" "<<p.getY()<<endl;
-        agent->setPath(p.getX(),p.getY(),0.5);
-    }
+
+        Punto *begin = new Punto(position[0]+5,position[1]+5);
+        Punto *end = new Punto(destination[0]+5,destination[1]+5);
+
+        if((fabs(begin->getX()-end->getX())>1)&&(fabs(begin->getY()-end->getY())>2)){           
+            Punto *end1 = new Punto(position[0]+5,destination[1]+5);           
+            std::vector<Punto> path1 = pathVoronoi(begin,end1);
+            std::vector<Punto> path2 = pathVoronoi(end1,end);
+            path1.insert(path1.end(),path2.begin(),path2.end());
+            for(Punto p : path1){
+                cout<<p.getX()-5<<" "<<p.getY()-5<<endl;
+                agent->setPath(p.getX()-5,p.getY()-5,0.5);
+            }
+        }else{
+            std::vector<Punto> path = pathVoronoi(begin,end);
+            for(Punto p : path){
+                cout<<p.getX()-5<<" "<<p.getY()-5<<endl;
+                agent->setPath(p.getX()-5,p.getY()-5.5,0.5);
+            }
+        }
     }
     agent->setDestination(destination[0], destination[1]);
     agent->setDesiredSpeed(desiredSpeed);
@@ -693,7 +706,7 @@ std::vector<Punto> pathVoronoi(Punto *begin,Punto *end){
         std::vector<Punto*> quadrato;
         vector<Point> wallCoors = ward.getWallCoordinates();
         for(int i=0;i<4;i++){
-            quadrato.push_back(new Punto(wallCoors[i].x,wallCoors[i].y));
+            quadrato.push_back(new Punto(wallCoors[i].x+5,wallCoors[i].y+5));
 
         }
         Ostacolo *o=new Ostacolo(&quadrato);
@@ -701,13 +714,12 @@ std::vector<Punto> pathVoronoi(Punto *begin,Punto *end){
         }		
 
     // length and width of the map
-	Voronoi *mappa=new Voronoi(21,12,ostacoli);
+	Voronoi *mappa=new Voronoi(23,12,ostacoli);
 	// std::vector<Punto*> *voronoi= mappa->getPuntiVoronoi();
 	ostacoli= *mappa->getOstacoli();
 	// std::vector<Punto*> *incroci= mappa->getIncroci();
 	
 	std::vector<Punto> pathVoronoi=mappa->getPercorso(*begin,*end);
-    return pathVoronoi;
 
     // std::ofstream fostacoli("result/obstacles.txt");
 	// for(int i=0;i<ostacoli.size();i++){
@@ -716,6 +728,10 @@ std::vector<Punto> pathVoronoi(Punto *begin,Punto *end){
 	// 	}
 	// }
 	// fostacoli.close();
+
+    return pathVoronoi;
+
+    
     
     // std::ofstream fpercorso("result/path.txt");
 	// for(int i=0;i<pathVoronoi.size();i++){
