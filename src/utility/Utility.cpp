@@ -557,214 +557,7 @@ std::vector<float> Utility::getPedesDestination(int direction, int side,
 {
     std::vector<float> v;
 
-    std::vector<float> mapLimit = getMapLimit(walkwayWidth, juncData);
-    float leftWidthLimit = mapLimit[0];
-    float rightWidthLimit = mapLimit[1];
-    float lowerHeightLimit = mapLimit[2];
-    float upperHeightLimit = mapLimit[3];
-
-    float radius = 0.5;
-    switch (direction)
-    {
-        // To Right
-    case 0:
-    {
-        float latitude;
-        if (stopAtCorridor)
-        {
-            // latitude = Utility::randomFloat(0, rightWidthLimit - 2);
-            latitude = Utility::randomInt(leftWidthLimit + 2, rightWidthLimit - 2);
-        }
-        else
-        {
-            latitude =
-                Utility::randomFloat(rightWidthLimit + 1, rightWidthLimit + 2);
-        }
-        switch (side)
-        {
-        case 0:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      //    Utility::randomFloat(walkwayWidth / 2 - walkwayWidth /
-                      //    3, walkwayWidth / 2),
-                      Utility::randomFloat(-walkwayWidth / 2, walkwayWidth / 2),
-                      radius});
-            return v;
-            break;
-        }
-        case 1:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                           walkwayWidth / 2 - walkwayWidth / 3),
-                      radius});
-            return v;
-            break;
-        }
-        case 2:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      Utility::randomFloat(-walkwayWidth / 2,
-                                           -walkwayWidth / 2 + walkwayWidth / 3),
-                      radius});
-            return v;
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    }
-        // To Left
-    case 1:
-    {
-        float latitude;
-        if (stopAtCorridor)
-        {
-            latitude = Utility::randomFloat(leftWidthLimit + 2, 0);
-        }
-        else
-        {
-            latitude = Utility::randomFloat(leftWidthLimit - 2, leftWidthLimit - 1);
-        }
-        switch (side)
-        {
-        case 0:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      Utility::randomFloat(-walkwayWidth / 2,
-                                           -walkwayWidth / 2 + walkwayWidth / 3),
-                      radius});
-            return v;
-            break;
-        }
-        case 1:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                           walkwayWidth / 2 - walkwayWidth / 3),
-                      radius});
-            return v;
-            break;
-        }
-        case 2:
-        {
-            v.insert(v.end(),
-                     {latitude,
-                      Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
-                                           walkwayWidth / 2),
-                      radius});
-            return v;
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    }
-        // To Bottom
-    case 2:
-    {
-        float longitude;
-        if (stopAtCorridor)
-        {
-            longitude = Utility::randomFloat(lowerHeightLimit + 2, 0);
-        }
-        else
-        {
-            longitude =
-                Utility::randomFloat(lowerHeightLimit - 2, lowerHeightLimit - 1);
-        }
-        switch (side)
-        {
-        case 0:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
-                                           walkwayWidth / 2),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        case 1:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                           walkwayWidth / 2 - walkwayWidth / 3),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        case 2:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(-walkwayWidth / 2,
-                                           -walkwayWidth / 2 + walkwayWidth / 3),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    }
-        // To Top
-    case 3:
-    {
-        float longitude;
-        if (stopAtCorridor)
-        {
-            longitude = Utility::randomFloat(0, upperHeightLimit - 2);
-        }
-        else
-        {
-            longitude =
-                Utility::randomFloat(upperHeightLimit + 1, upperHeightLimit + 2);
-        }
-        switch (side)
-        {
-        case 0:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(-walkwayWidth / 2,
-                                           -walkwayWidth / 2 + walkwayWidth / 3),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        case 1:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                           walkwayWidth / 2 - walkwayWidth / 3),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        case 2:
-        {
-            v.insert(v.end(),
-                     {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
-                                           walkwayWidth / 2),
-                      longitude, radius});
-            return v;
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    }
-    default:
-        return v;
-        break;
-    }
+    v.insert(v.end(),{0.5,4});
     return v;
 }
 
@@ -774,203 +567,45 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
                                            float walkwayWidth,
                                            std::vector<float> juncData)
 {
+    //test
     std::vector<float> v;
-    float totalArea = totalLength * caravanWidth;
-    float centerLength = totalLength - 2 * subLength;
 
-    std::mt19937 gen(std::random_device{}());
-    std::vector<double> chances{subLength * caravanWidth / totalArea,
-                                centerLength * caravanWidth / totalArea,
-                                subLength * caravanWidth / totalArea};
-    // Initialize to same length.
-    std::vector<int> choices(chances.size());
-    choices = {0, 1, 2};
-    // size_t is suitable for indexing.
-    std::discrete_distribution<std::size_t> d{chances.begin(), chances.end()};
+    // test 0 : left to right : pass(10s) F1->E1
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(-7,-6),
+    //                   Utility::randomFloat(4,5)});
 
-    int sampled_value = choices[d(gen)];
-    // cout << "sampled_value " << sampled_value << endl;
-
-    std::vector<float> mapLimit = getMapLimit(walkwayWidth, juncData);
-    float rightWidthLimit = mapLimit[1];
-    float upperHeightLimit = mapLimit[3];
-
-    float horLandmark = rightWidthLimit;
-    float verLandmark = upperHeightLimit;
-    if (totalLength > 40)
-    {
-        horLandmark = totalLength / 2;
-        verLandmark = totalLength / 2;
-    }
-    // Calculate coordinates from Head to Tail of each Caravan
-    switch (direction)
-    {
-    // From Left to Right
-    case 0:
-        switch (sampled_value)
-        {
-            // ward G
-        case 0:
-            v.insert(v.end(),
-                     {Utility::randomFloat(-6,-4),
-                      Utility::randomFloat(10,11)});
-            return v;
-            break;
-        case 1:
-            v.insert(v.end(),
-                     {Utility::randomFloat(4,6),
-                      Utility::randomFloat(10,11)});
-            return v;
-            break;
-        case 2:
-            v.insert(v.end(),
-                     {Utility::randomFloat(-6,-8),
-                      Utility::randomFloat(-1,0)});
-            return v;
-            break;      
-        default:
-            break;
-        }
-        break;
-        // switch (sampled_value)
-        // {
-        // case 0:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(-horLandmark + centerLength / 2,
-        //                                    -11),
-        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-        //     return v;
-        //     break;
-        // case 1:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(-horLandmark - centerLength / 2,
-        //                                    -11),
-        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-        //     return v;
-        //     break;
-        // case 2:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(-horLandmark - totalLength / 2,
-        //                                    -11),
-        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-        //     return v;
-        //     break;
-        // default:
-        //     break;
-        // }
-        // break;
-
-        // From Right to Left
-    case 1:
-    switch (sampled_value)
-    {
-    case 0:
-        v.insert(v.end(),
-                     {Utility::randomFloat(-9,-1),
-                      Utility::randomFloat(-6,-5)});
-        return v;
-        break;
-    case 1:
-        v.insert(v.end(),
-                     {Utility::randomFloat(-9,-1),
-                      Utility::randomFloat(-11,-10)});
-            return v;
-            break;
-    case 2:
-        v.insert(v.end(),
-                     {Utility::randomFloat(-9,-1),
-                      Utility::randomFloat(-6,-5)});
-        return v;
-        break;    
-    default:
-        break;
-    }
-        break;
-        // switch (sampled_value)
-        // {
-        // case 0:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(-9,-1),
-        //               Utility::randomFloat(-8,-6)});
-        //     return v;
-        //     break;
-        // case 1:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(21,
-        //                                    horLandmark + centerLength / 2),
-        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-        //     return v;
-        //     break;
-        // case 2:
-        //     v.insert(v.end(),
-        //              {Utility::randomFloat(21,
-        //                                    horLandmark + totalLength / 2),
-        //               Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
-        //     return v;
-        //     break;
-        // default:
-        //     break;
-        // }
-
-    // From Top to Bottom
-    case 2:
-        switch (sampled_value)
-        {
-        case 0:
-            v.insert(v.end(),
-                     {Utility::randomFloat(14,16),
-                      Utility::randomFloat(10,11)});
-            return v;
-            break;
-        case 1:
-            v.insert(v.end(),
-                     {Utility::randomFloat(-8,-6),
+    //test 1 : right to left : pass(10s) W1->E1
+    v.insert(v.end(),
+                     {Utility::randomFloat(17,18),
                       Utility::randomFloat(4,5)});
-            return v;
-            break;
-        case 2:
-            v.insert(v.end(),
-                     {Utility::randomFloat(0,1),
-                      Utility::randomFloat(4,5)});
-            return v;
-            break;
-        default:
-            break;
-        }
-        break;
 
-        // From Bottom to Top
-    case 3:
-        switch (sampled_value)
-        {
-        case 0:
-            v.insert(v.end(),
-                     {Utility::randomFloat(9,10),
-                      Utility::randomFloat(4,5)});
-            return v;
-            break;
-        case 1:
-            v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(-verLandmark - centerLength / 2,
-                                           -verLandmark + centerLength / 2)});
-            return v;
-            break;
-        case 2:
-            v.insert(v.end(),
-                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                      Utility::randomFloat(-verLandmark - totalLength / 2,
-                                           -verLandmark - centerLength / 2)});
-            return v;
-            break;
-        default:
-            break;
-        }
-        break;
-    default:
-        return v;
-        break;
-    }
+    // //test 3 : top to bottom : pass(10s) G2->E1
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(-5,-4.9),
+    //                   Utility::randomFloat(5.8,5.9)});
+
+    //test 4 : bottom to top : 9/10 pass(27s) L1->E1
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(4.8,5),
+    //                   Utility::randomFloat(-6,-5.9)});
+
+    //test 5 : bottom right to top : Not pass B1->E1
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(14.8,15),
+    //                   Utility::randomFloat(-6,-5.9)});
+
+    //test 6 : bottom left to top : 7/10 pass(51s) A1->E1
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(-6,-5.9),
+    //                   Utility::randomFloat(-6,-5.9)});
+
+    //A1 -> E2
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(5,5.1),
+    //                   Utility::randomFloat(10,10.1)});
+             
+
     return v;
 }
 
