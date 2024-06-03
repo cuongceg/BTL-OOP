@@ -130,62 +130,67 @@ void Voronoi::CreaVoronoi(){
 
 
 
-std::vector<Punto> Voronoi::getPercorso(Punto partenza,Punto arrivo){
-	std::cout<<"Calculating the route"<<std::endl;
-	
+std::vector<Punto> Voronoi::getPercorso(Punto partenza, Punto arrivo) {
+	std::cout << "Calculating the route" << std::endl;
+
 	std::vector<Punto> percorso;
-	percorso.push_back(partenza); //solo temporaneo
-	double dist=10000;
-	double dist2=10000;
-	Punto *minimo_arrivo=NULL;
-	Punto *minimo=NULL;
-	
-	for(int i=0;i<punti_voronoi.size();i++){
-		Punto *p= punti_voronoi.at(i);
-		double val= sqrt((partenza.getX()-p->getX())*(partenza.getX()-p->getX()) + (partenza.getY()-p->getY())*(partenza.getY()-p->getY()));
-        double val2= sqrt((arrivo.getX()-p->getX())*(arrivo.getX()-p->getX()) + (arrivo.getY()-p->getY())*(arrivo.getY()-p->getY()));
-		if(val<dist){
-			minimo=p;
-			dist=val;
+	percorso.push_back(partenza); // temporary
+
+	double dist = 10000;
+	double dist2 = 10000;
+	Punto* minimo_arrivo = nullptr;
+	Punto* minimo = nullptr;
+
+	for (int i = 0; i < punti_voronoi.size(); i++) {
+		Punto* p = punti_voronoi.at(i);
+		double val = sqrt(pow(partenza.getX() - p->getX(), 2) + pow(partenza.getY() - p->getY(), 2));
+		double val2 = sqrt(pow(arrivo.getX() - p->getX(), 2) + pow(arrivo.getY() - p->getY(), 2));
+		if (val < dist) {
+			minimo = p;
+			dist = val;
 		}
-		if(val2<dist2){
-			minimo_arrivo=p;
-			dist2=val2;
+		if (val2 < dist2) {
+			minimo_arrivo = p;
+			dist2 = val2;
 		}
 	}
-	
-	if(minimo==NULL) return percorso;
-	if(minimo_arrivo==NULL) return percorso;
-	
+
+	if (minimo == nullptr) {
+		return percorso;
+	}
+	if (minimo_arrivo == nullptr) {
+		return percorso;
+	}
+
 	percorso.push_back(*minimo);
-	
-	if(minimo->getX()== arrivo.getX() && minimo->getY()==arrivo.getY()) return percorso;
-	
-	std::vector<Punto*> perc_voro= getPercorsoVoronoi(*minimo,*minimo_arrivo,NULL);
-	//std::vector<Punto*> perc_voro= getPercorsoVoronoi2(*minimo,*minimo_arrivo);
-	
-	if(perc_voro.size()>0){
-		Punto *tmp=perc_voro.at(0);
+
+	if (minimo->getX() == arrivo.getX() && minimo->getY() == arrivo.getY()) {
+		return percorso;
+	}
+
+	std::vector<Punto*> perc_voro = getPercorsoVoronoi(*minimo, *minimo_arrivo, nullptr);
+
+	if (perc_voro.size() > 0) {
+		Punto* tmp = perc_voro.at(0);
 		percorso.push_back(*tmp);
-		for(int i=1;i<perc_voro.size();i++){
-			if(Ostacolo::Distanza(*tmp,*perc_voro.at(i))>=distanza){
+		for (int i = 1; i < perc_voro.size(); i++) {
+			if (Ostacolo::Distanza(*tmp, *perc_voro.at(i)) >= distanza) {
 				percorso.push_back(*perc_voro.at(i));
-				tmp=perc_voro.at(i);
+				tmp = perc_voro.at(i);
 			}
 		}
-		
+
 		std::vector<Punto> temp;
-		for(int i=0;i<percorso.size();i+=scarto){
+		for (int i = 0; i < percorso.size(); i += scarto) {
 			temp.push_back(percorso.at(i));
 		}
-		percorso=temp;
-			
+		percorso = temp;
 	}
-	
+
 	percorso.push_back(*minimo_arrivo);
 	percorso.push_back(arrivo);
-	
-	return percorso;	
+
+	return percorso;
 }
 
 

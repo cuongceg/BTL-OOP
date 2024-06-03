@@ -556,8 +556,14 @@ std::vector<float> Utility::getPedesDestination(int direction, int side,
                                                 bool stopAtCorridor)
 {
     std::vector<float> v;
+    
+    //N2 
+    v.insert(v.end(),{15,6});
 
-    v.insert(v.end(),{0.5,4});
+    //W2
+    // v.insert(v.end(),{17,-4});
+
+    //
     return v;
 }
 
@@ -576,9 +582,9 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
     //                   Utility::randomFloat(4,5)});
 
     //test 1 : right to left : pass(10s) W1->E1
-    v.insert(v.end(),
-                     {Utility::randomFloat(17,18),
-                      Utility::randomFloat(4,5)});
+    // v.insert(v.end(),
+    //                  {Utility::randomFloat(17,18),
+    //                   Utility::randomFloat(4,5)});
 
     // //test 3 : top to bottom : pass(10s) G2->E1
     // v.insert(v.end(),
@@ -600,10 +606,10 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
     //                  {Utility::randomFloat(-6,-5.9),
     //                   Utility::randomFloat(-6,-5.9)});
 
-    //A1 -> E2
-    // v.insert(v.end(),
-    //                  {Utility::randomFloat(5,5.1),
-    //                   Utility::randomFloat(10,10.1)});
+    //A1
+    v.insert(v.end(),
+                     {Utility::randomFloat(-5,-4.9),
+                      Utility::randomFloat(-5.9,-5.8)});
              
 
     return v;
