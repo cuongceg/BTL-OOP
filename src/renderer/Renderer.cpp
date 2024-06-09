@@ -213,10 +213,10 @@ void Renderer::drawWalls(SocialForce *socialForce)
 {
     vector<Wall *> walls = socialForce->getWalls();
 
-    glColor3f(0.2F, 0.2F, 0.2F);
     glPushMatrix();
     for (Wall *wall : walls)
     {
+        glColor3f(wall->getWallColor().x, wall->getWallColor().y, wall->getWallColor().z);
         glBegin(GL_LINES);
         glVertex2f(wall->getStartPoint().x, wall->getStartPoint().y);
         glVertex2f(wall->getEndPoint().x, wall->getEndPoint().y);
@@ -234,7 +234,8 @@ void Renderer::drawText(float x, float y, const char text[])
     glPushMatrix();
     glTranslatef(x, y, 0.0);
     glScalef(0.0045F, 0.0045F, 0.0);
-    glLineWidth(0.8F);
+    glColor3f(0.0, 0.0, 0.0);
+    glLineWidth(0.1F);
 
     int idx = 0;
     while (text[idx] != '\0')
@@ -278,19 +279,19 @@ void Renderer::showInformation(
     glColor3f(0.0, 0.0, 0.0);
 
     // Total Agents
-    drawText(margin.x, margin.y - 0.9F, "Total agents:");
+    drawText(margin.x-0.5, margin.y - 0.9F, "Total agents:");
     std::string s = std::to_string(socialForce->getCrowdSize());
     drawText(
         margin.x + 4.0F, margin.y - 0.9F, // totalAgentsStr
         s.c_str());
 
     // FPS
-    drawText(margin.x, margin.y, "FPS:");
+    drawText(margin.x-0.5, margin.y, "FPS:");
     s = std::to_string(static_cast<int>(fps));
     drawText(margin.x + 1.7F, margin.y, s.c_str() /*fpsStr*/);
 
     // Simulation Time
-    drawText(margin.x, margin.y - 1.8F, "Simulation time:");
+    drawText(margin.x-0.5F, margin.y - 1.8F, "Simulation time:");
     if (animate)
     {
         s = convertTime(currTime - startTime);
@@ -309,27 +310,27 @@ void Renderer::showInformation(
     {
         drawSquare(margin.x, -margin.y + 5.2, 0.3, GREEN);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y + 5, "No disability, without overtaking behavior");
+        drawText(margin.x + 0.2, -margin.y + 5, "No dis, without overtaking behavior");
 
         drawSquare(margin.x, -margin.y + 4.2, 0.3, PURPLE);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y + 4, "No disability, with overtaking behavior");
+        drawText(margin.x + 0.2, -margin.y + 4, "No dis, with overtaking behavior");
 
         drawSquare(margin.x, -margin.y + 3.2, 0.3, RED);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y + 3, "Walking with crutches");
+        drawText(margin.x + 0.2, -margin.y + 3, "Walking with crutches");
 
         drawSquare(margin.x, -margin.y + 2.2, 0.3, WOOD);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y + 2, "Walking with sticks");
+        drawText(margin.x + 0.2, -margin.y + 2, "Walking with sticks");
 
         drawSquare(margin.x, -margin.y + 1.2, 0.3, GRAY);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y + 1, "Wheelchairs");
+        drawText(margin.x + 0.2, -margin.y + 1, "Wheelchairs");
 
         drawSquare(margin.x, -margin.y + 0.2, 0.3, BLACK);
         glColor3f(0.0, 0.0, 0.0);
-        drawText(margin.x + 0.5, -margin.y, "The blind");
+        drawText(margin.x + 0.2, -margin.y, "The blind");
     }
     else
     {

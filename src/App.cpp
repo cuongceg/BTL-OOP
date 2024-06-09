@@ -5,12 +5,16 @@
 #endif
 
 #include <random>
+#include <fstream>
 #include <lib/nlohmann/json.hpp>
 
 #include "model/SocialForce.h"
 #include "constant/Constant.h"
 #include "renderer/Renderer.h"
 #include "pedestrian/Pedestrian.hpp"
+#include "ward/Ward.h"
+#include "event/Event.h"
+#include "voronoi diagram/Voronoi.h"
 
 using namespace std;
 using namespace Constant;
@@ -58,6 +62,8 @@ void reshape(int width, int height);
 void normalKey(unsigned char key, int xMousePos, int yMousePos);
 
 void update();
+
+std::vector<Punto> pathVoronoi(Punto *begin,Punto *end);
 
 int main(int argc, char **argv)
 {
@@ -115,7 +121,6 @@ int main(int argc, char **argv)
     float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
     // Threshold people stopping at the corridor
     threshold = int(inputData["numOfAgents"]["value"]) * deviationParam * (float)(inputData["stopAtHallway"]["value"]) / 100;
-
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
                         GLUT_DEPTH);         // Set display mode  Default mode used
@@ -131,9 +136,10 @@ int main(int argc, char **argv)
     {
         glutHideWindow();
     }
-    // generatePedestrian();
-    // Pedestrian pedes = generatePedestrian();
-    // vector<vector<double>>allEmo = eventsImpact(pedes,2);
+    // generatePedestrian(1);
+    // // leavingDistribution("A");
+    // // vector<Pedestrian> pedestrians = generatePedestrian(0);
+    // // vector<vector<double>>allEmo = eventsImpact(pedestrians[0],2);
     init();                   // Initialization
     glutDisplayFunc(display); // Send graphics to display window
     glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
@@ -142,7 +148,6 @@ int main(int argc, char **argv)
     glutKeyboardFunc(normalKey);
     glutIdleFunc(update); // Continuously execute 'update()'
     glutMainLoop();       // Enter GLUT's main loop
-
     return 0;
 }
 
@@ -193,149 +198,70 @@ void init()
     createAGVs();
 }
 
-void createWalls()
-{
+void createWalls(){
+    vector<Point> wallCoors = generateAroundWard();
+    vector<Ward> wards= generateWard();
     Wall *wall;
+    //upper wall
+    wall = new Wall(wallCoors.at(3).x,wallCoors.at(3).y-1,wallCoors.at(0).x,wallCoors.at(0).y-1);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //lower wall
+    wall = new Wall(wallCoors.at(2).x,wallCoors.at(2).y+1,wallCoors.at(1).x,wallCoors.at(1).y+1);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //left wall
+    wall = new Wall(wallCoors.at(2).x,wallCoors.at(2).y+1,wallCoors.at(3).x,wallCoors.at(3).y-1);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
+    //right wall
+    wall = new Wall(wallCoors.at(0).x,wallCoors.at(0).y-1,wallCoors.at(1).x,wallCoors.at(1).y+1);
+    wall->setWallColor(232,39,35);
+    socialForce->addWall(wall);
 
-    vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
-
-    if (juncData.size() == 2)
-    {
-        // Upper Wall
-        wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
-        socialForce->addWall(wall);
-        // Lower Wall
-        wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
-        socialForce->addWall(wall);
-    }
-    else
-    {
-        // Upper Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
-            socialForce->addWall(wall);
-
-            wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
-            socialForce->addWall(wall);
-        }
-        else if (juncData.size() == 3)
-        {
-            wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
+    for(Ward ward : wards){
+        vector<Point> wallCoors = ward.getWallCoordinates();
+        string name = ward.getName();
+        for(int i=0;i<4;i++){
+            wall = new Wall(wallCoors[i].x,wallCoors[i].y,wallCoors[(i+1)%4].x,wallCoors[(i+1)%4].y);
+            wall->setWallColor(0,50,0);
             socialForce->addWall(wall);
         }
+}
+}
 
-        // Lower Wall
-        wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
-        socialForce->addWall(wall);
-
-        wall = new Wall(coors[12], coors[13], coors[14], coors[15]);
-        socialForce->addWall(wall);
-
-        // Left Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
-            socialForce->addWall(wall);
+void createLabel(){
+    vector<Ward> wards= generateWard();
+    for(Ward ward : wards){
+        int cnt=1;
+        vector<Point> entrance = ward.getEntrance();
+        vector<Point> exit = ward.getExit();
+        string name = ward.getName();
+        for (Point point : entrance){
+            string entrName = name + to_string(cnt);
+            if(name=="A"&& cnt==2){
+                drawText(point.x-0.3,point.y,entrName.c_str());}
+            else{
+            drawText(point.x-0.3,point.y-0.5,entrName.c_str());}
+            cnt++;
         }
-
-        wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
-        socialForce->addWall(wall);
-
-        // Right Wall
-        if (juncData.size() == 4)
-        {
-            wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
-            socialForce->addWall(wall);
+        
+        for (Point point : exit){
+            string exitName = name + to_string(cnt);
+            if(name=="A"&& cnt==3){
+                drawText(point.x,point.y,exitName.c_str());}
+            else if(name=="A"&& cnt==4){
+                drawText(point.x-0.6,point.y,exitName.c_str());}
+            else{    
+            drawText(point.x-0.3,point.y,exitName.c_str());}
+            cnt++;
         }
-
-        wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
-        socialForce->addWall(wall);
     }
 }
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump)
 {
-    // if (socialForce->getCrowdSize() < threshold)
-    // {
-    //     agent->setStopAtCorridor(true);
-    // }
-
     int codeSrc = 0;
-    int codeDes = 0;
-
-    int juncType = juncData.size();
-
-    if (juncType == 4)
-    {
-        if (caseJump < 3)
-        {
-            codeSrc = 0; // Go from Left to Right
-        }
-        else if (caseJump < 6)
-        {
-            codeSrc = 1; // Go from Right to Left
-        }
-        else if (caseJump < 9)
-        {
-            codeSrc = 2; // Go from Top to Bottom
-        }
-        else
-        {
-            codeSrc = 3; // Go from Bottom to Top
-        }
-    }
-    else if (juncType == 3)
-    {
-        if (caseJump < 6)
-        {
-            codeSrc = 0;
-            if (caseJump % 2 == 0)
-            {
-                codeDes = 0;
-            }
-            else
-            {
-                codeDes = 2;
-            }
-        }
-        else if (caseJump < 12)
-        {
-            codeSrc = 1;
-            if (caseJump % 2 == 0)
-            {
-                codeDes = 1;
-            }
-            else
-            {
-                codeDes = 2;
-            }
-        }
-        else if (caseJump < 18)
-        {
-            codeSrc = 3;
-            if (caseJump % 2 == 0)
-            {
-                codeDes = 0;
-            }
-            else
-            {
-                codeDes = 1;
-            }
-        }
-    }
-    else if (juncType == 2)
-    {
-        if (caseJump < 3)
-        {
-            codeSrc = 0;
-        }
-        else
-        {
-            codeSrc = 1;
-        }
-    }
-
     vector<float> position = Utility::getPedesSource(
         codeSrc,
         (float)inputData["totalCrowdLength"]["value"],
@@ -343,23 +269,36 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
         (float)inputData["crowdWidth"]["value"],
         walkwayWidth,
         juncData);
-    vector<float> desList;
-    if (juncType == 4 || juncType == 2)
-    {
-        desList = Utility::getPedesDestination(codeSrc, caseJump % 3, walkwayWidth, juncData, agent->getStopAtCorridor());
-    }
-    else if (juncType == 3)
-    {
-        desList = Utility::getPedesDestination(codeDes, caseJump % 3, walkwayWidth, juncData, agent->getStopAtCorridor());
-    }
-
+    vector<float> destination = Utility::getPedesDestination(1,1,walkwayWidth,juncData,true);    
     agent->setPosition(position[0], position[1]);
-    if (juncType == 3 && codeSrc != codeDes)
-    {
-        agent->setPath(randomFloat(-walkwayWidth / 2, walkwayWidth / 2), randomFloat(-walkwayWidth / 2, walkwayWidth / 2), 2.0);
+    cout<<"Position: "<<position[0]<<" "<<position[1]<<endl;
+    double distance = sqrt(pow(position[0] - destination[0], 2) + pow(position[1] - destination[1], 2));
+    cout<<"Distance: "<<distance<<endl;
+    if(distance<5){
+        agent->setPath(destination[0], destination[1], 0.5);
+    }else{
+
+        Punto *begin = new Punto(position[0]+5,position[1]+5);
+        Punto *end = new Punto(destination[0]+5,destination[1]+5);
+
+        if((fabs(begin->getX()-end->getX())>1)&&(fabs(begin->getY()-end->getY())>2)){           
+            Punto *end1 = new Punto(position[0]+5,destination[1]+5);           
+            std::vector<Punto> path1 = pathVoronoi(begin,end1);
+            std::vector<Punto> path2 = pathVoronoi(end1,end);
+            path1.insert(path1.end(),path2.begin(),path2.end());
+            for(Punto p : path1){
+                cout<<p.getX()-5<<" "<<p.getY()-5<<endl;
+                agent->setPath(p.getX()-5,p.getY()-5,0.5);
+            }
+        }else{
+            std::vector<Punto> path = pathVoronoi(begin,end);
+            for(Punto p : path){
+                cout<<p.getX()-5<<" "<<p.getY()-5<<endl;
+                agent->setPath(p.getX()-5,p.getY()-5.5,0.5);
+            }
+        }
     }
-    agent->setPath(desList[0], desList[1], desList[2]);
-    agent->setDestination(desList[0], desList[1]);
+    agent->setDestination(destination[0], destination[1]);
     agent->setDesiredSpeed(desiredSpeed);
     std::vector<float> color = getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), classificationType);
     agent->setColor(color[0], color[1], color[2]);
@@ -390,56 +329,9 @@ void createAgents()
 
     int pedesCount = 0;
 
-    // test
-
-    // for (int temp = 0; temp < 3; temp++)
-    // {
-    //     agent = new Agent;
-    //     // setAgentsFlow(agent, 1, maxSpeed, minSpeed, Point3f(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0), 0.0), Point3f(randomFloat(-3.2, -2.8), randomFloat(-2.2, -1.8), 0.0));
-    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
-    //     // // float x = randomFloat(-13.3F, -6.0);
-    //     // // float y = randomFloat(-2.0, 2.0);
-    //     float x = randomFloat(-3.2, -2.8);
-    //     float y = randomFloat(-2.2, -1.8);
-    //     agent->setPath(x, y, 2);
-    //     agent->setDestination(x, y);
-    //     // // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-    //     agent->setDesiredSpeed(1);
-    //     agent->setStopAtCorridor(true);
-    //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), classificationType);
-    //     agent->setColor(color[0], color[1], color[2]);
-    //     socialForce->addAgent(agent);
-    // }
-
-    // test
-
     if (juncData.size() == 2)
     {
         for (int idx = 0; idx < 6; idx++)
-        {
-            for (int temp = 0; temp < numOfPeople[idx]; temp++)
-            {
-                agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
-                pedesCount = pedesCount + 1;
-            }
-        }
-    }
-    else if (juncData.size() == 3)
-    {
-        for (int idx = 0; idx < 18; idx++)
-        {
-            for (int temp = 0; temp < numOfPeople[idx]; temp++)
-            {
-                agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
-                pedesCount = pedesCount + 1;
-            }
-        }
-    }
-    else if (juncData.size() == 4)
-    {
-        for (int idx = 0; idx < 12; idx++)
         {
             for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
@@ -610,8 +502,8 @@ void display()
 
     glPushMatrix();
     glScalef(1.0, 1.0, 1.0);
-
     drawAgents(socialForce);
+    createLabel();
     drawAGVs(socialForce, juncData, (int)inputData["runConcurrently"]["value"], (int)inputData["runMode"]["value"]);
     drawWalls(socialForce);
     glPopMatrix();
@@ -804,4 +696,60 @@ void update()
     computeFPS(&fps);
     glutPostRedisplay();
     glutIdleFunc(update); // Continuously execute 'update()'
+}
+
+std::vector<Punto> pathVoronoi(Punto *begin,Punto *end){
+    //obstacles is wall
+    std::vector<Ostacolo*> ostacoli;
+    vector<Ward> wards= generateWard();
+    for(Ward ward : wards){
+        std::vector<Punto*> quadrato;
+        vector<Point> wallCoors = ward.getWallCoordinates();
+        for(int i=0;i<4;i++){
+            quadrato.push_back(new Punto(wallCoors[i].x+5,wallCoors[i].y+5));
+
+        }
+        Ostacolo *o=new Ostacolo(&quadrato);
+        ostacoli.push_back(o);
+        }		
+
+    // length and width of the map
+	Voronoi *mappa=new Voronoi(23,12,ostacoli);
+	// std::vector<Punto*> *voronoi= mappa->getPuntiVoronoi();
+	ostacoli= *mappa->getOstacoli();
+	// std::vector<Punto*> *incroci= mappa->getIncroci();
+	
+	std::vector<Punto> pathVoronoi=mappa->getPercorso(*begin,*end);
+
+    // std::ofstream fostacoli("result/obstacles.txt");
+	// for(int i=0;i<ostacoli.size();i++){
+	// 	for(int j=0;j<ostacoli.at(i)->getIngombro()->size();j++){
+	// 	fostacoli<< ostacoli.at(i)->getIngombro()->at(j)->getX() << " " << ostacoli.at(i)->getIngombro()->at(j)->getY() << std::endl;
+	// 	}
+	// }
+	// fostacoli.close();
+
+    return pathVoronoi;
+
+    
+    
+    // std::ofstream fpercorso("result/path.txt");
+	// for(int i=0;i<pathVoronoi.size();i++){
+	// 	fpercorso<< pathVoronoi.at(i).getX() << " " << pathVoronoi.at(i).getY() << std::endl;		
+	// }
+	// fpercorso.close();
+
+	
+	
+	// std::ofstream fvoronoi("result/voronoi.txt");
+	// for(int i=0;i<voronoi->size();i++){
+	// 	fvoronoi<< voronoi->at(i)->getX() << " " << voronoi->at(i)->getY() << std::endl;		
+	// }
+	// fvoronoi.close();
+	
+	// std::ofstream fincroci("result/crossings.txt");
+	// for(int i=0;i<incroci->size();i++){
+	// 	fincroci<< incroci->at(i)->getX() << " " << incroci->at(i)->getY() << std::endl;		
+	// }
+	// fincroci.close();
 }
