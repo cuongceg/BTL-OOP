@@ -277,12 +277,15 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
     if(distance<5){
         agent->setPath(destination[0], destination[1], 0.5);
     }else{
+        // Punto *begin = new Punto(position[0]+10,position[1]+11);
+        // Punto *end = new Punto(destination[0]+10,destination[1]+11);
 
         Punto *begin = new Punto(position[0]+5,position[1]+5);
         Punto *end = new Punto(destination[0]+5,destination[1]+5);
 
-        if((fabs(begin->getX()-end->getX())>1)&&(fabs(begin->getY()-end->getY())>2)){           
-            Punto *end1 = new Punto(position[0]+5,destination[1]+5);           
+        if(begin->getY()<end->getY()){
+            if((fabs(begin->getX()-end->getX())>1)&&(fabs(begin->getY()-end->getY())>2)){           
+            Punto *end1 = new Punto(position[0]+5,destination[1]+4);           
             std::vector<Punto> path1 = pathVoronoi(begin,end1);
             std::vector<Punto> path2 = pathVoronoi(end1,end);
             path1.insert(path1.end(),path2.begin(),path2.end());
@@ -291,11 +294,22 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
                 agent->setPath(p.getX()-5,p.getY()-5,0.5);
             }
         }else{
+            int x=0,y=0;
+            if(begin->getY()<-9){
+                begin->setX(5);
+                begin->setY(6);
+                end->setX(5);
+                end->setY(6);
+                x=5;
+                y=6;
+            }
             std::vector<Punto> path = pathVoronoi(begin,end);
             for(Punto p : path){
-                cout<<p.getX()-5<<" "<<p.getY()-5<<endl;
-                agent->setPath(p.getX()-5,p.getY()-5.5,0.5);
+                cout<<p.getX()-5-x<<" "<<p.getY()-5-y<<endl;
+                agent->setPath(p.getX()-5-x,p.getY()-5.5-y,0.5);
             }
+        }
+        }else{
         }
     }
     agent->setDestination(destination[0], destination[1]);
